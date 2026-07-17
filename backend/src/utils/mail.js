@@ -18,19 +18,3 @@ const sendMail = async ({ to, subject, html }) => {
 };
 
 module.exports = { sendMail };
-
-/* 
-
-const { sendMail } = require("../utils/mail");
-
-await sendMail({
-    to: "client@gmail.com",
-    subject: "Upcoming Hearing Reminder",
-    html: `
-        <h2>LegalFlow</h2>
-        <p>Your hearing is scheduled on <b>20 August 2026</b>.</p>
-        <p>Please be available on time.</p>
-    `,
-});
-
-*/

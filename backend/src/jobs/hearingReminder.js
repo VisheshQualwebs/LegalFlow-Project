@@ -12,7 +12,6 @@ cron.schedule("0 7 * * *", async () => {
         const reminderDate = new Date();
         reminderDate.setDate(today.getDate() + 7);
 
-        // Format YYYY-MM-DD
         const date = reminderDate.toISOString().split("T")[0];
 
         const cases = await Case.findAll({
@@ -83,13 +82,10 @@ cron.schedule("0 7 * * *", async () => {
                 });
             }
 
-            // Prevent duplicate emails
             item.hearingReminderSent = true;
             await item.save();
         }
-
         console.log(`${cases.length} reminder(s) sent`);
-
     } catch (error) {
         console.error("Hearing Reminder Error:", error.message);
     }

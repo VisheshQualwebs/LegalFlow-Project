@@ -100,7 +100,6 @@ const update = async (id, user, body) => {
         data.status = "assigned";
     }
 
-    // Lawyer update status
     if (body.status && user.role === "lawyer") {
         if(data.lawyerId !== user.id) {
             throw new Error("Access Denied");

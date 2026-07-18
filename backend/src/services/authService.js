@@ -1,34 +1,31 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-
-const { createUser, findUserByEmail, createLawyer } = require("../repositories/userRepository");
+const { User } = require("../models");
 
 const registerUser = async (userData) => {
-    const existingUser = await findUserByEmail(userData.email);
+    const existingUser = await User.findOne({
+        where: {
+            email: userData.email.toLowerCase()
+        }
+    });
+
     if (existingUser) {
         throw new Error("Email already Exist");
     }
 
     const hashedpassword = await bcrypt.hash(userData.password, 10);
-    userData.password = hashedpassword;
 
     if (userData.role === "lawyer") {
-        userData.status = "pending";
-    } else {
-        userData.status = "approved";
+        if (!userData.barCouncilNumber ||  !userData.specialization || !userData.experience) {
+            throw new Error("Lawyer details are required");
+        }
     }
 
-    const user = await createUser(userData);
-
-    if (user.role === "lawyer") {
-        await createLawyer({
-            userId: user.id,
-            barCouncilNumber: userData.barCouncilNumber,
-            specialization: userData.specialization,
-            experience: userData.experience,
-            license: userData.license,
-        });
-    }
+    const user = await User.create({
+        ...userData,
+        password: hashedpassword,
+        status: userData.role === "lawyer" ? "pending" : "approved"
+    });
 
     return {
         id: user.id,
@@ -41,16 +38,20 @@ const registerUser = async (userData) => {
 
 const loginUser = async (email, password) => {
 
-    const user = await findUserByEmail(email);
+    const user = await User.findOne({
+        where: {
+            email
+        }
+    });
 
     if (!user) {
-        throw new Error("Invalid Email");
+        throw new Error("Invalid Email or Password");
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-        throw new Error("Invalid Password!!")
+        throw new Error("Invalid Email or Password!!")
     }
 
     if (user.role === "lawyer" && user.status !== "approved") {

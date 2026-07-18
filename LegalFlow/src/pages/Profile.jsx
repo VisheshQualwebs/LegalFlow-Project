@@ -25,6 +25,8 @@ function Profile() {
     }, [user]);
 
     const loadProfile = async () => {
+        // console.log("loadProfile called");
+
         try {
 
             const response = await userService.read(user.id);
@@ -188,7 +190,7 @@ function Profile() {
                 )}
 
                 <div>
-                    <label className="block font-medium mb-1">
+                    <label className="font-medium mb-1">
                         New Password
                     </label>
 
@@ -203,7 +205,7 @@ function Profile() {
                 </div>
 
                 <div>
-                    <label className="block font-medium mb-1">
+                    <label className="font-medium mb-1">
                         Confirm Password
                     </label>
 

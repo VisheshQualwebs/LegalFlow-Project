@@ -1,4 +1,5 @@
 const { User, Case, Lawyer } = require("../models");
+const bcrypt = require("bcrypt");
 
 const list = async (query) => {
     const payload = {};
@@ -81,16 +82,17 @@ const read = async (currentUser, id, query) => {
 
 const update = async (currentUser, id, body) => {
 
-if (
-        currentUser.role !== "admin" &&
-        currentUser.id !== Number(id)
-    ) {
+    if (currentUser.role !== "admin" && currentUser.id !== Number(id)) {
         throw new Error("Forbidden");
     }
     const user = await User.findByPk(id);
 
     if (!user) {
         throw new Error("User not found");
+    }
+
+    if (body.password) {
+        body.password = await bcrypt.hash(body.password, 10);
     }
 
     if (currentUser.role === "admin") {

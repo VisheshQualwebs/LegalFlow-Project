@@ -1,15 +1,18 @@
 import { useMemo } from "react";
 
 const useAuth = () => {
-    let user = null;
-    try {
+
+    const user = useMemo(() => {
+
         const storedUser = localStorage.getItem("user");
-        if (storedUser && storedUser !== "undefined") {
-            user = JSON.parse(storedUser);
+
+        if (!storedUser || storedUser === "undefined") {
+            return null;
         }
-    } catch (error) {
-        user = null;
-    }
+
+        return JSON.parse(storedUser);
+
+    }, []);
 
     const token = useMemo(() => localStorage.getItem("token"), []);
 

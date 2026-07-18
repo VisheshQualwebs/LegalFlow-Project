@@ -174,17 +174,42 @@ const Signup = () => {
 
                             <input type="password" name="confirmPassword" placeholder="Confirm Password" value={formData.confirmPassword} onChange={handleChange}
                                 className="w-full bg-transparent border border-gray-500 rounded-lg py-4 px-5 placeholder:text-gray-500 focus:outline-none focus:border-white" />
-
+                            {
+                                errors.confirmPassword && (
+                                    <p className="text-red-500 text-sm">
+                                        {errors.confirmPassword}
+                                    </p>
+                                )
+                            }
+                            
                             {formData.role === "lawyer" && (
                                 <>
                                     <input type="text" name="barCouncilNumber" placeholder="Bar Council Number" value={formData.barCouncilNumber} onChange={handleChange}
                                         className="w-full bg-transparent border border-gray-500 rounded-lg py-4 px-5 placeholder:text-gray-500 focus:outline-none focus:border-white" />
+                                    {
+                                        errors.barCouncilNumber &&
+                                        <p className="text-red-500 text-sm">
+                                            {errors.barCouncilNumber}
+                                        </p>
+                                    }
 
                                     <input type="text" name="specialization" placeholder="Specialization" value={formData.specialization} onChange={handleChange}
                                         className="w-full bg-transparent border border-gray-500 rounded-lg py-4 px-5 placeholder:text-gray-500 focus:outline-none focus:border-white" />
+                                    {
+                                        errors.specialization &&
+                                        <p className="text-red-500 text-sm">
+                                            {errors.specialization}
+                                        </p>
+                                    }
 
                                     <input type="number" name="experience" placeholder="Experience (Years)" value={formData.experience} onChange={handleChange}
                                         className="w-full bg-transparent border border-gray-500 rounded-lg py-4 px-5 placeholder:text-gray-500 focus:outline-none focus:border-white" />
+                                    {
+                                        errors.experience &&
+                                        <p className="text-red-500 text-sm">
+                                            {errors.experience}
+                                        </p>
+                                    }
                                 </>
                             )}
 

@@ -4,7 +4,7 @@ const path = require("path");
 const crypto = require("crypto");
 const Document = require("../models/Document");
 
-const create = async (req, reply) => {
+const create = async (req, resp) => {
     const file = await req.file();
     const uploadDir = path.join(process.cwd(), "uploads/documents");
 
@@ -30,45 +30,47 @@ const create = async (req, reply) => {
 
     const document = await Document.create({
         caseId: data.id,
+        uploadedBy: req.user.id,
         fileName: uniqueName,
+        originalName: file.filename,
         filePath: `uploads/documents/${uniqueName}`,
         fileType: file.mimetype,
         fileSize: file.file.bytesRead
     });
 
-    return reply.code(201).send({
+    return resp.code(201).send({
         success: true,
         message: "Case Created Successfully",
         data
     });
 };
 
-const list = async (req, reply) => {
+const list = async (req, resp) => {
     const cases = await caseService.list(req.user, req.query);
-    return reply.send({
+    return resp.send({
         success: true,
         data: cases
     });
 };
 
-const read = async (req, reply) => {
+const read = async (req, resp) => {
     const data = await caseService.read(
         req.user,
         req.params.id,
     );
-    return reply.send({
+    return resp.send({
         success: true,
         data
     });
 };
 
-const update = async (req, reply) => {
+const update = async (req, resp) => {
     await caseService.update(
         req.params.id,
         req.user,
         req.body
     );
-    return reply.send({
+    return resp.send({
         success: true,
         message: "Case Updated Successfully"
     });

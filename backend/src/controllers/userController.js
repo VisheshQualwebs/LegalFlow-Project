@@ -26,7 +26,7 @@ const update = async (req, resp) => {
         req.user.role !== "admin" &&
         req.user.id !== Number(req.params.id)
     ) {
-        return reply.code(403).send({
+        return resp.code(403).send({
             message: "Forbidden"
         });
     }

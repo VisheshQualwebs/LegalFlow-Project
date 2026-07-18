@@ -1,6 +1,7 @@
 import AssignLawyers from "../pages/AssignLawyers";
 import Clients from "../pages/Clients";
 import CreateCase from "../pages/CreateCase";
+import Documents from "../pages/Documents";
 import ManageCases from "../pages/ManageCases";
 import ManageLawyers from "../pages/ManageLawyers";
 import Profile from "../pages/Profile";
@@ -26,6 +27,7 @@ export const routeConfig = {
         { path: "/my-cases", element: <ViewCase /> },
         { path: "/clients", element: <Clients /> },
         { path: "/profile", element: <Profile /> },
+        { path: "/document", element: <Documents /> },
         { path: "/manage-cases", element: <ManageCases /> }
     ],
 
@@ -33,6 +35,7 @@ export const routeConfig = {
         { path: "/dashboard", element: <Dashboard /> },
         { path: "/my-cases", element: <ViewCase /> },
         { path: "/create-case", element: <CreateCase /> },
+        { path: "/document", element: <Documents /> },
         { path: "/profile", element: <Profile /> }
     ]
 

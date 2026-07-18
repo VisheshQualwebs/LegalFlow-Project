@@ -13,38 +13,48 @@ const Document = sequelize.define(
 
         caseId: {
             type: DataTypes.INTEGER,
-            allowNull:false
+            allowNull: false
         },
 
         fileName: {
             type: DataTypes.STRING,
-            allowNull:false
+            allowNull: false
+        },
+
+        originalName: {
+            type: DataTypes.STRING,
+            allowNull: false
         },
 
         filePath: {
             type: DataTypes.STRING,
-            allowNull:false
+            allowNull: false
         },
 
         fileType: {
             type: DataTypes.STRING,
-            allowNull:false
+            allowNull: false
         },
 
         fileSize: {
             type: DataTypes.INTEGER,
-            allowNull:false
+            allowNull: false
         },
 
         version: {
             type: DataTypes.INTEGER,
-            defaultValue:1
+            defaultValue: 1
+        },
+
+        uploadedBy: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
         }
 
     },
     {
-        tableName:"documents",
-        timestamps:true
+        tableName: "documents",
+        timestamps: true
     }
 );
 

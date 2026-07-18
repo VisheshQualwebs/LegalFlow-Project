@@ -1,17 +1,16 @@
 const User = require("./User");
-const Lawyer = require("./Lawyer");
 const Case = require("./Case");
 const Document = require("./Document")
 
-User.hasOne(Lawyer, {
-    foreignKey: "userId",
-    as: "lawyerDetails",
-});
+// User.hasOne(Lawyer, {
+//     foreignKey: "userId",
+//     as: "lawyerDetails",
+// });
 
-Lawyer.belongsTo(User, {
-    foreignKey: "userId",
-    as: "user",
-});
+// Lawyer.belongsTo(User, {
+//     foreignKey: "userId",
+//     as: "user",
+// });
 
 User.hasMany(Case, {
     foreignKey: "clientId",
@@ -34,13 +33,23 @@ Case.belongsTo(User, {
 });
 
 Case.hasMany(Document, {
-foreignKey: "caseId",
-as: "documents"
+    foreignKey: "caseId",
+    as: "documents"
 })
 
 Document.belongsTo(Case, {
-foreignKey: "caseId",
-as: "case"
+    foreignKey: "caseId",
+    as: "case"
 })
 
-module.exports = { User, Lawyer, Case }
+User.hasMany(Document, {
+    foreignKey: "uploadedBy",
+    as: "uploadedDocuments",
+})
+
+Document.belongsTo(User, {
+    foreignKey: "uploadedBy",
+    as: "uploadedDocuments",
+})
+
+module.exports = { User, Case, Document }

@@ -28,19 +28,19 @@ function Documents() {
 
     return (
         <div className="container py-4">
-            <h2 className="mb-4">{user.role === "client" ? "My Documents" : "Assigned Case Documents"}</h2>
+            <h2 className="mb-6 text-3xl font-bold">{user.role === "client" ? "My Documents" : "Assigned Case Documents"}</h2>
             <div className="bg-white rounded-xl shadow overflow-x-auto">
-                <table className="w-full">
+                <table className="w-full p-4">
                     <thead className="bg-black text-white">
                         <tr>
                             <th>Case</th>
                             {user.role === "lawyer" && (
                                 <th>Client</th>
                             )}
-                            <th>File Name</th>
-                            <th>Date</th>
-                            <th>View</th>
-                            <th>Download</th>
+                            <th className="p-2">File Name</th>
+                            <th className="p-2">Date</th>
+                            <th className="p-2">View</th>
+                            <th className="p-2">Download</th>
                         </tr>
                     </thead>
                     <tbody className="text-center">

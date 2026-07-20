@@ -13,7 +13,8 @@ const startServer = async () => {
         console.log("Tables Synced");
 
         await app.listen({
-            port: process.env.PORT
+            port: process.env.PORT,
+            host: "0.0.0.0"
         });
         console.log(`Server Running On Port ${process.env.PORT}`);
     } catch (error) {

@@ -23,7 +23,8 @@ const Document = sequelize.define(
 
         originalName: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
+            defaultValue: "NA"
         },
 
         filePath: {

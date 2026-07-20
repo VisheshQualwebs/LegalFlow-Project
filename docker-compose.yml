@@ -1,0 +1,44 @@
+services:
+
+  postgres:
+    image: postgres:17-alpine
+    container_name: legalflow-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: legalflow
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+
+  backend:
+    build: 
+      context: ./backend
+    container_name: legalflow-backend
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: legalflow
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      JWT_SECRET: mysecretkey
+    depends_on:
+      - postgres
+
+  frontend:
+    build: 
+      context: ./LegalFlow
+    container_name: legalflow-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+  
+
+volumes:
+  postgres-data:

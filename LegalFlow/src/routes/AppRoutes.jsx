@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 
 import useAuth from "../hooks/useAuth";
 import DashboardLayout from "../layouts/DashboardLayout";
@@ -12,7 +12,7 @@ function AppRoutes() {
     const { user } = useAuth();
     return (
         <Routes>
-            
+            <Route path="/" element={<Navigate to="/login" replace />} />
             <Route element={<AuthLayout />}>
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />

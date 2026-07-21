@@ -23,22 +23,21 @@ function AppRoutes() {
                 <Route path="/signup" element={<Signup />} />
             </Route>
 
-            <Route
-                path="/"
+            <Route path="/"
                 element={
                     <ProtectedRoutes allowedRole={user?.role}>
                         <DashboardLayout />
                     </ProtectedRoutes>
-                }
-            >
+                }>
                 {user &&
-                    routeConfig[user.role].map((route) => (
+                    routeConfig[user?.role].map((route) => (
                         <Route
                             key={route.path}
                             path={route.path}
                             element={route.element}
                         />
-                    ))}
+                    ))
+                }
             </Route>
         </Routes>
     )

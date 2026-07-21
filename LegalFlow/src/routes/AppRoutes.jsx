@@ -11,7 +11,7 @@ import Signup from "../pages/auth/Signup";
 function AppRoutes() {
     const { user, loading } = useAuth();
 
-    if(loading){
+    if (loading) {
         return <h1>Loading...</h1>
     }
 
@@ -24,6 +24,7 @@ function AppRoutes() {
             </Route>
 
             <Route
+                path="/"
                 element={
                     <ProtectedRoutes allowedRole={user?.role}>
                         <DashboardLayout />

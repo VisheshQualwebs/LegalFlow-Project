@@ -11,12 +11,19 @@ const signup = async (req, resp) => {
 
 const login = async (req, resp) => {
     const { email, password } = req.body;
-    const data = await loginUser(email, password);
-    return resp.send({
-        success: true,
-        message: "Login Successfull",
-        data
-    })
+    try {
+        const data = await loginUser(email, password);
+        return resp.send({
+            success: true,
+            message: "Login Successfull",
+            data
+        })
+    } catch (error) {
+        return resp.send({
+            success: false,
+            message: error.message,
+        })
+    }
 }
 
 

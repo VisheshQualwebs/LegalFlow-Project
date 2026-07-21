@@ -37,7 +37,6 @@ const registerUser = async (userData) => {
 };
 
 const loginUser = async (email, password) => {
-
     if (email === "admin@legalflow.com" && password === "admin@123") {
         const token = jwt.sign(
             {
@@ -49,7 +48,7 @@ const loginUser = async (email, password) => {
                 expiresIn: "1d"
             }
         );
-        return{
+        return {
             token,
             user: {
                 id: 1,
@@ -63,7 +62,7 @@ const loginUser = async (email, password) => {
 
     const user = await User.findOne({
         where: {
-            email
+            email: email.toLowerCase()
         }
     });
 

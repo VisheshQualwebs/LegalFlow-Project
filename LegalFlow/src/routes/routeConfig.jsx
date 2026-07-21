@@ -14,29 +14,29 @@ import ViewCase from "../pages/ViewCase";
 export const routeConfig = {
 
     admin: [
-        { path: "/dashboard", element: <Dashboard /> },
-        { path: "/manage-lawyers", element: <ManageLawyers /> },
-        { path: "/view-cases", element: <ViewCase /> },
-        { path: "/settings", element: <Settings /> },
-        { path: "/reports", element: <Reports /> },
-        { path: "/assign-lawyers", element: <AssignLawyers /> }
+        { path: "dashboard", element: <Dashboard /> },
+        { path: "manage-lawyers", element: <ManageLawyers /> },
+        { path: "view-cases", element: <ViewCase /> },
+        { path: "settings", element: <Settings /> },
+        { path: "reports", element: <Reports /> },
+        { path: "assign-lawyers", element: <AssignLawyers /> }
     ],
 
     lawyer: [
-        { path: "/dashboard", element: <Dashboard /> },
-        { path: "/my-cases", element: <ViewCase /> },
-        { path: "/clients", element: <Clients /> },
-        { path: "/profile", element: <Profile /> },
-        { path: "/document", element: <Documents /> },
-        { path: "/manage-cases", element: <ManageCases /> }
+        { path: "dashboard", element: <Dashboard /> },
+        { path: "my-cases", element: <ViewCase /> },
+        { path: "clients", element: <Clients /> },
+        { path: "profile", element: <Profile /> },
+        { path: "document", element: <Documents /> },
+        { path: "manage-cases", element: <ManageCases /> }
     ],
 
     client: [
-        { path: "/dashboard", element: <Dashboard /> },
-        { path: "/my-cases", element: <ViewCase /> },
-        { path: "/create-case", element: <CreateCase /> },
-        { path: "/document", element: <Documents /> },
-        { path: "/profile", element: <Profile /> }
+        { path: "dashboard", element: <Dashboard /> },
+        { path: "my-cases", element: <ViewCase /> },
+        { path: "create-case", element: <CreateCase /> },
+        { path: "document", element: <Documents /> },
+        { path: "profile", element: <Profile /> }
     ]
 
 };

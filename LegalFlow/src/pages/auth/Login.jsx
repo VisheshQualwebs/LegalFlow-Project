@@ -68,6 +68,7 @@ const Login = () => {
             alert(response.message);
 
             if (user.role === "admin") {
+                console.log("login.jsx page run");
                 navigate("/dashboard")
             } else if (user.role === "lawyer") {
                 navigate("/dashboard");

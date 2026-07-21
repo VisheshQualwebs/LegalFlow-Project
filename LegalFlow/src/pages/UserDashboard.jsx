@@ -15,7 +15,7 @@ const UserDashboard = () => {
     useEffect(() => {
         const loadDashboard = async () => {
             try {
-                const response = await dashboardService.getDashboard(user?.role);
+                const response = await dashboardService.getDashboard(user.role);
                 setStats(response.data);
             } catch (error) {
                 console.error(error);

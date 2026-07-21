@@ -9,7 +9,12 @@ import Login from "../pages/auth/Login";
 import Signup from "../pages/auth/Signup";
 
 function AppRoutes() {
-    const { user } = useAuth();
+    const { user, loading } = useAuth();
+
+    if(loading){
+        return <h1>Loading...</h1>
+    }
+
     return (
         <Routes>
             <Route path="/" element={<Navigate to="/login" replace />} />

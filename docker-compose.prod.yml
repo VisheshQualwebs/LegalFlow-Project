@@ -1,0 +1,36 @@
+services:
+
+  backend:
+    # build: 
+    #   context: ./backend
+    image: visheshsoni099/legalflow-backend:latest
+    container_name: legalflow-backend
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      DB_HOST: legalflow-db.cvsuu4y8iyy8.ap-southeast-2.rds.amazonaws.com
+      DB_PORT: 5432
+      DB_NAME: legalflow
+      DB_USER: postgres
+      DB_PASSWORD: ${{ DB_PASSWORD }}
+      JWT_SECRET: ${{ JWT_SECRET }}
+
+    restart: always
+
+  frontend:
+    # build: 
+    #   context: ./LegalFlow
+    image: visheshsoni099/legalflow-frontend:latest
+    container_name: legalflow-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+    restart: always
+  
+networks:
+  default:
+    driver: bridge
+

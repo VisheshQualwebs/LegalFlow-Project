@@ -1,0 +1,71 @@
+name: LegalFlow CI
+
+on:
+  push:
+    branches: 
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  backend:
+    name: Backend CI
+    runs-on: ubuntu-latest
+
+    defaults: 
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build Backend Docker image
+        run: docker build -t legalflow-backend .
+  
+
+  frontend:
+    name: Frontend CI
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: LegalFlow
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: LegalFlow/package-lock.json
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build Frontend
+        run: npm run build
+
+      - name: Build Frontend Docker image
+        run: docker build -t legalflow-frontend .

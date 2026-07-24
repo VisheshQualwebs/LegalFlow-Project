@@ -27,14 +27,14 @@ jobs:
         with:
           context: ./backend
           push: true
-          tags: visheshsoni099/legalflow-backend:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/legalflow-backend:latest
 
       - name: Build Frontend image
         uses: docker/build-push-action@v6
         with:
           context: ./LegalFlow
           push: true
-          tags: visheshsoni099/legalflow-frontend:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/legalflow-frontend:latest
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.2.2

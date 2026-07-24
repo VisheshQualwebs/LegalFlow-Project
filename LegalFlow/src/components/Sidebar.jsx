@@ -57,11 +57,6 @@ const Sidebar = () => {
             visible_roles: ["client", "lawyer"],
         },
         {
-            title: "Reports",
-            url: "/reports",
-            visible_roles: ["admin"],
-        },
-        {
             title: "Settings",
             url: "/settings",
             visible_roles: ["admin"],

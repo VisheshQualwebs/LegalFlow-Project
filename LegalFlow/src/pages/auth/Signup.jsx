@@ -7,28 +7,6 @@ const Signup = () => {
 
     const navigate = useNavigate();
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        const validationErrors = validateForm();
-
-        if (Object.keys(validationErrors).length > 0) {
-            setErrors(validationErrors);
-            return;
-        }
-        setErrors({});
-
-        try {
-            const response = await signup(formData);
-            console.log(response)
-            alert(response.message);
-            navigate("/login");
-        } catch (error) {
-            console.log(error);
-            alert(error.response?.data?.message || "Signup Failed");
-        }
-    };
-
     const handleChange = (e) => {
         const { name, value, files } = e.target;
         setFormData((prev) => ({
@@ -100,6 +78,41 @@ const Signup = () => {
         return newErrors;
     }
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        const validationErrors = validateForm();
+
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(validationErrors);
+            return;
+        }
+        setErrors({});
+
+        try {
+            const response = await signup(formData);
+            console.log(response)
+            alert(response.message);
+            navigate("/login");
+        } catch (error) {
+            console.log(error);
+            alert(error.response?.data?.message || "Signup Failed");
+        }
+
+        setFormData({
+            role: "client",
+            status: "",
+            fullName: "",
+            email: "",
+            phone: "",
+            password: "",
+            confirmPassword: "",
+            barCouncilNumber: "",
+            specialization: "",
+            experience: "",
+        })
+    };
+
     return (
         <div className="bg-gray-200 min-h-screen flex items-center justify-center">
             <div className="w-[1200px] min-h-[700px] rounded-[30px] overflow-hidden shadow-2xl border border-gray-400 grid grid-cols-2">
@@ -134,82 +147,37 @@ const Signup = () => {
                         <form onSubmit={handleSubmit} className="space-y-5">
                             <input type="text" name="fullName" placeholder="Full Name" value={formData.fullName} onChange={handleChange}
                                 className="w-full bg-transparent border border-gray-500 rounded-lg py-4 px-5 placeholder:text-gray-500 focus:outline-none focus:border-white" />
-                            {
-                                errors.fullName && (
-                                    <p className="text-red-500 text-sm">
-                                        {errors.fullName}
-                                    </p>
-                                )
-                            }
+                            {errors.fullName && (<p className="text-red-500 text-sm">{errors.fullName} </p>)}
 
                             <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange}
                                 className="w-full bg-transparent border border-gray-500 rounded-lg py-4 px-5 placeholder:text-gray-500 focus:outline-none focus:border-white" />
-                            {
-                                errors.email && (
-                                    <p className="text-red-500 text-sm">
-                                        {errors.email}
-                                    </p>
-                                )
-                            }
+                            {errors.email && (<p className="text-red-500 text-sm">{errors.email}</p>)}
 
                             <input type="tel" name="phone" placeholder="Phone Number" value={formData.phone} onChange={handleChange}
                                 className="w-full bg-transparent border border-gray-500 rounded-lg py-4 px-5 placeholder:text-gray-500 focus:outline-none focus:border-white" />
-                            {
-                                errors.phone && (
-                                    <p className="text-red-500 text-sm">
-                                        {errors.phone}
-                                    </p>
-                                )
-                            }
+                            {errors.phone && (<p className="text-red-500 text-sm">{errors.phone}</p>)}
 
                             <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange}
                                 className="w-full bg-transparent border border-gray-500 rounded-lg py-4 px-5 placeholder:text-gray-500 focus:outline-none focus:border-white" />
-                            {
-                                errors.password && (
-                                    <p className="text-red-500 text-sm">
-                                        {errors.password}
-                                    </p>
-                                )
-                            }
+                            {errors.password && (<p className="text-red-500 text-sm">{errors.password}</p>)}
 
                             <input type="password" name="confirmPassword" placeholder="Confirm Password" value={formData.confirmPassword} onChange={handleChange}
                                 className="w-full bg-transparent border border-gray-500 rounded-lg py-4 px-5 placeholder:text-gray-500 focus:outline-none focus:border-white" />
-                            {
-                                errors.confirmPassword && (
-                                    <p className="text-red-500 text-sm">
-                                        {errors.confirmPassword}
-                                    </p>
-                                )
-                            }
-                            
+                            {errors.confirmPassword && (<p className="text-red-500 text-sm">{errors.confirmPassword}</p>)}
+
                             {formData.role === "lawyer" && (
                                 <>
                                     <input type="text" name="barCouncilNumber" placeholder="Bar Council Number" value={formData.barCouncilNumber} onChange={handleChange}
                                         className="w-full bg-transparent border border-gray-500 rounded-lg py-4 px-5 placeholder:text-gray-500 focus:outline-none focus:border-white" />
-                                    {
-                                        errors.barCouncilNumber &&
-                                        <p className="text-red-500 text-sm">
-                                            {errors.barCouncilNumber}
-                                        </p>
-                                    }
+                                    {errors.barCouncilNumber && (<p className="text-red-500 text-sm">{errors.barCouncilNumber}</p>)}
 
                                     <input type="text" name="specialization" placeholder="Specialization" value={formData.specialization} onChange={handleChange}
                                         className="w-full bg-transparent border border-gray-500 rounded-lg py-4 px-5 placeholder:text-gray-500 focus:outline-none focus:border-white" />
-                                    {
-                                        errors.specialization &&
-                                        <p className="text-red-500 text-sm">
-                                            {errors.specialization}
-                                        </p>
-                                    }
+                                    {errors.specialization && (<p className="text-red-500 text-sm">{errors.specialization}</p>)}
 
                                     <input type="number" name="experience" placeholder="Experience (Years)" value={formData.experience} onChange={handleChange}
                                         className="w-full bg-transparent border border-gray-500 rounded-lg py-4 px-5 placeholder:text-gray-500 focus:outline-none focus:border-white" />
-                                    {
-                                        errors.experience &&
-                                        <p className="text-red-500 text-sm">
-                                            {errors.experience}
-                                        </p>
-                                    }
+                                    {errors.experience && (<p className="text-red-500 text-sm">{errors.experience}</p>)}
                                 </>
                             )}
 

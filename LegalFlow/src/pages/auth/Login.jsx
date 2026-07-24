@@ -20,11 +20,11 @@ const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
 
     const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
+        const { name, value,} = e.target;
 
         setFormData((prev) => ({
             ...prev,
-            [name]: type === "checkbox" ? checked : value,
+            [name]: value,
         }));
     };
 
@@ -59,13 +59,12 @@ const Login = () => {
             };
 
             const response = await login(data);
-
-            const { user, token } = response.data;
+            const { user, token } = response.data.data;
 
             localStorage.setItem("token", token);
             localStorage.setItem("user", JSON.stringify(user));
 
-            alert(response.message);
+            alert(response.data.message);
 
             if (user.role === "admin") {
                 navigate("/dashboard")
@@ -76,7 +75,7 @@ const Login = () => {
             }
 
         } catch (error) {
-            alert(error.response?.data?.message || "Login failed");
+            alert(error.response?.data?.message || "User Not registered");
         }
 
     };
@@ -137,11 +136,6 @@ const Login = () => {
                             </div>
 
                             <div className="flex justify-between items-center mb-8">
-                                <label className="flex items-center gap-2 text-sm text-gray-300">
-                                    <input type="checkbox" name="remember" checked={formData.remember} onChange={handleChange} className="accent-white" />
-                                    Remember me
-                                </label>
-
                                 <Link to="/forgot-password" className="text-sm underline">
                                     Forgot Password?
                                 </Link>

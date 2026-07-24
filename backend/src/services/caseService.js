@@ -33,9 +33,7 @@ const list = async (user, query) => {
         }
     }
 
-    if (query.status) {
-                payload.status = query.status;
-            }
+    if (query.status) { payload.status = query.status }
 
     options.include = [
         {
@@ -54,7 +52,6 @@ const list = async (user, query) => {
         where: payload,
         ...options
     });
-
 };
 
 const read = async (currentUser, id) => {
@@ -94,14 +91,13 @@ const update = async (id, user, body) => {
         throw new Error("Case not found");
     }
 
-    // Admin can assign lawyer
     if (body.lawyerId && user.role === "admin") {
         data.lawyerId = body.lawyerId;
         data.status = "assigned";
     }
 
     if (body.status && user.role === "lawyer") {
-        if(data.lawyerId !== user.id) {
+        if (data.lawyerId !== user.id) {
             throw new Error("Access Denied");
         }
 
@@ -112,30 +108,30 @@ const update = async (id, user, body) => {
         })
         data.status = body.status;
     }
-    
+
     await data.save();
     return data;
 };
 
 const destroy = async (id, user) => {
-       const data = await Case.findByPk(id);
+    const data = await Case.findByPk(id);
 
-       if (!data) {
+    if (!data) {
         throw new Error("Case not found");
-       }
+    }
 
-       if (user.role === "admin") {
-           await data.destroy();
-           return;
-       }
+    if (user.role === "admin") {
+        await data.destroy();
+        return;
+    }
 
-       if (user.role !== "client") {
-           throw new Error("Access denied");
-       }
+    if (user.role !== "client") {
+        throw new Error("Access denied");
+    }
 
-       if (data.clientId !== user.id) {
-           throw new Error("Access denied");
-       }
+    if (data.clientId !== user.id) {
+        throw new Error("Access denied");
+    }
 
     await data.destroy();
 }

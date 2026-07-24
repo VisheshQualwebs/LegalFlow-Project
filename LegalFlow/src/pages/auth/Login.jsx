@@ -20,7 +20,7 @@ const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
 
     const handleChange = (e) => {
-        const { name, value,} = e.target;
+        const { name, value, } = e.target;
 
         setFormData((prev) => ({
             ...prev,
@@ -59,12 +59,12 @@ const Login = () => {
             };
 
             const response = await login(data);
-            const { user, token } = response.data.data;
+            const { user, token } = response.data;
 
             localStorage.setItem("token", token);
             localStorage.setItem("user", JSON.stringify(user));
 
-            alert(response.data.message);
+            alert(response.message);
 
             if (user.role === "admin") {
                 navigate("/dashboard")
@@ -73,7 +73,7 @@ const Login = () => {
             } else if (user.role === "client") {
                 navigate("/dashboard");
             }
-
+            // navigate("/dashboard")
         } catch (error) {
             alert(error.response?.data?.message || "User Not registered");
         }

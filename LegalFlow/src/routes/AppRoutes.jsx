@@ -9,11 +9,7 @@ import Login from "../pages/auth/Login";
 import Signup from "../pages/auth/Signup";
 
 function AppRoutes() {
-    const { user, loading } = useAuth();
-
-    if (loading) {
-        return <h1>Loading...</h1>
-    }
+    const { user } = useAuth();
 
     return (
         <Routes>

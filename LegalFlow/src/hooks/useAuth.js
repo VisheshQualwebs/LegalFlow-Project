@@ -16,17 +16,26 @@
 import { useState } from "react";
 
 function useAuth() {
-    const [user] = useState(() => {
-        const storedUser = localStorage.getItem("user");
-        if (!storedUser || storedUser === "undefined") {
-            return null;
-        }
-        try {
-            return JSON.parse(storedUser);
-        } catch {
-            return null;
-        }
-    });
+    // const [user] = useState(() => {
+    //     const storedUser = localStorage.getItem("user");
+    //     if (!storedUser || storedUser === "undefined") {
+    //         return null;
+    //     }
+    //     try {
+    //         return JSON.parse(storedUser);
+    //     } catch {
+    //         return null;
+    //     }
+    // });
+    // return { user };
+
+    const storedUser = localStorage.getItem("user");
+
+    const user =
+        storedUser && storedUser !== "undefined"
+            ? JSON.parse(storedUser)
+            : null;
+
     return { user };
 }
 

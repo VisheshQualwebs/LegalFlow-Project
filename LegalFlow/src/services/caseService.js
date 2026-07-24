@@ -14,4 +14,5 @@ const create = async (data) => {
     const resp = await api.post("/cases", data)
     return resp.data;
 }
+
 export default { list, create, update, lists, remove };

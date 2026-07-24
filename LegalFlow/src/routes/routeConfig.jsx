@@ -5,7 +5,6 @@ import Documents from "../pages/Documents";
 import ManageCases from "../pages/ManageCases";
 import ManageLawyers from "../pages/ManageLawyers";
 import Profile from "../pages/Profile";
-import Reports from "../pages/Reports";
 import Settings from "../pages/Settings";
 import Dashboard from "../pages/UserDashboard";
 import ViewCase from "../pages/ViewCase";
@@ -18,7 +17,6 @@ export const routeConfig = {
         { path: "manage-lawyers", element: <ManageLawyers /> },
         { path: "view-cases", element: <ViewCase /> },
         { path: "settings", element: <Settings /> },
-        { path: "reports", element: <Reports /> },
         { path: "assign-lawyers", element: <AssignLawyers /> }
     ],
 

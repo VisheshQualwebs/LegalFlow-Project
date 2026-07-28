@@ -1,16 +1,27 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 
-import useAuth from "../hooks/useAuth";
-import DashboardLayout from "../layouts/DashboardLayout";
-import ProtectedRoutes from "./ProtectedRoutes";
-import { routeConfig } from "./routeConfig";
 import AuthLayout from "../layouts/AuthLayout";
+import DashboardLayout from "../layouts/DashboardLayout";
 import Login from "../pages/auth/Login";
 import Signup from "../pages/auth/Signup";
+import ProtectedRoutes from "./ProtectedRoutes";
+import { routeConfig } from "./routeConfig";
 
 function AppRoutes() {
-    const { user } = useAuth();
+    let user = null;
 
+    try {
+        const storedUser = localStorage.getItem("user");
+        if (storedUser && storedUser !== "undefined") {
+            user = JSON.parse(storedUser);
+        }
+    } catch (err) {
+        console.error("Invalid user in localStorage:", err);
+        localStorage.removeItem("user");
+    }
+    // console.log("User:", user);
+    // console.log("Role:", user?.role);
+    // console.log("Routes:", user ? routeConfig[user.role] : null);
     return (
         <Routes>
             <Route path="/" element={<Navigate to="/login" replace />} />
@@ -25,7 +36,7 @@ function AppRoutes() {
                         <DashboardLayout />
                     </ProtectedRoutes>
                 }>
-                {user &&
+                {/* {user &&
                     routeConfig[user?.role].map((route) => (
                         <Route
                             key={route.path}
@@ -33,7 +44,16 @@ function AppRoutes() {
                             element={route.element}
                         />
                     ))
-                }
+                } */}
+
+                {[...routeConfig.admin,
+                ...routeConfig.lawyer,
+                ...routeConfig.client,
+                ].filter((route, index, self) =>
+                    self.findIndex((r) => r.path === route.path) === index
+                ).map((route) => (
+                    <Route key={route.path} path={route.path} element={route.element} />
+                ))}
             </Route>
         </Routes>
     )

@@ -1,14 +1,24 @@
 import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
-    
-    const user = JSON.parse(localStorage.getItem("user"));
+
+    let user = null;
+
+    try {
+        const storedUser = localStorage.getItem("user");
+        if (storedUser && storedUser !== "undefined") {
+            user = JSON.parse(storedUser);
+        }
+    } catch (err) {
+        console.error("Invalid user in localStorage:", err);
+        localStorage.removeItem("user");
+    }
 
     const navigate = useNavigate();
 
     const handleLogout = () => {
         const confirmLogout = window.confirm("Are you sure you want to logout?");
-        if(!confirmLogout) return;
+        if (!confirmLogout) return;
         localStorage.removeItem("user");
         localStorage.removeItem("token");
         navigate("/login");

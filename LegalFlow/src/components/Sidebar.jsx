@@ -1,7 +1,17 @@
 import { Link } from "react-router-dom";
 
 const Sidebar = () => {
-    const user = JSON.parse(localStorage.getItem("user"));
+    let user = null;
+
+    try {
+        const storedUser = localStorage.getItem("user");
+        if (storedUser && storedUser !== "undefined") {
+            user = JSON.parse(storedUser);
+        }
+    } catch (err) {
+        console.error("Invalid user in localStorage:", err);
+        localStorage.removeItem("user");
+    }
 
     if (!user) return null;
 

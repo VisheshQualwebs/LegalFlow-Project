@@ -59,23 +59,37 @@ const Login = () => {
             };
 
             const response = await login(data);
+            // console.log("Response:", response);
+
             const { user, token } = response.data;
+            // console.log("User:", user);
+            // console.log("Token:", token);
 
             localStorage.setItem("token", token);
             localStorage.setItem("user", JSON.stringify(user));
+            // console.log("Stored:", localStorage.getItem("user"));
+
 
             alert(response.message);
 
             if (user.role === "admin") {
-                navigate("/dashboard")
+                setTimeout(() => {
+                    navigate("/dashboard");
+                }, 100);
             } else if (user.role === "lawyer") {
-                navigate("/dashboard");
+                setTimeout(() => {
+                    navigate("/dashboard");
+                }, 100);;
             } else if (user.role === "client") {
-                navigate("/dashboard");
+                setTimeout(() => {
+                    navigate("/dashboard");
+                }, 100);;
             }
-            // navigate("/dashboard")
         } catch (error) {
-            alert(error.response?.data?.message || "User Not registered");
+            // console.log("Login Error:", error);
+            // console.log("Response:", error.response);
+            // console.log("Message:", error.message);
+            alert(error.response?.data?.message || error.message);
         }
 
     };

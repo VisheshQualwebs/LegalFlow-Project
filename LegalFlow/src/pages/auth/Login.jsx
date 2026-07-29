@@ -90,8 +90,12 @@ const Login = () => {
             // console.log("Response:", error.response);
             // console.log("Message:", error.message);
             alert(error.response?.data?.message || error.message);
+        } finally {
+            setFormData({
+                email: "",
+                password: "",
+            })
         }
-
     };
 
     return (

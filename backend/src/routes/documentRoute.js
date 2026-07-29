@@ -1,4 +1,5 @@
 const documentController = require("../controllers/documentController");
+const { summarizeDocumentController } = require("../controllers/summarizeDocumentController");
 const authenticate = require("../middlewares/authMiddleware");
 
 async function documentRoutes(app) {
@@ -14,6 +15,10 @@ async function documentRoutes(app) {
     app.get("/documents/:id/download", {
         preHandler: [authenticate],
     }, documentController.downloadDocument);
+
+    app.post("/documents/:id/summarize", {
+        preHandler: [authenticate],
+    }, summarizeDocumentController)
 
 }
 

@@ -57,3 +57,13 @@ async function summarizeDocumentController(req, resp) {
 }
 
 module.exports = { summarizeDocumentController }
+
+/*
+1. extracting document id from the parameters 
+2. check document exist
+3. document read
+4. extract data text using pdfParse
+5. call ai class 
+6. save response in the document table in summary field 
+7. return response
+*/

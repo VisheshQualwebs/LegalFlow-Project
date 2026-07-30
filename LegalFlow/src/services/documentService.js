@@ -50,6 +50,12 @@ const viewDocument = async (id) => {
     window.open(url, "_blank");
 }
 
-const documentService = { getDocuments, uploadDocument, downloadDocument, viewDocument };
+const summarizeDocument = async (id) => {
+    console.log("frontend document service called")
+    const response = await api.post(`/documents/${id}/summarize`);
+    return response.data;
+}
+
+const documentService = { getDocuments, uploadDocument, downloadDocument, viewDocument, summarizeDocument };
 
 export default documentService;

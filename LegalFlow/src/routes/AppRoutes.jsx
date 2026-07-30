@@ -19,9 +19,6 @@ function AppRoutes() {
         console.error("Invalid user in localStorage:", err);
         localStorage.removeItem("user");
     }
-    // console.log("User:", user);
-    // console.log("Role:", user?.role);
-    // console.log("Routes:", user ? routeConfig[user.role] : null);
     return (
         <Routes>
             <Route path="/" element={<Navigate to="/login" replace />} />

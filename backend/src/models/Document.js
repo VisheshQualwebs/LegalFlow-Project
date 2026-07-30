@@ -50,6 +50,11 @@ const Document = sequelize.define(
         uploadedBy: {
             type: DataTypes.INTEGER,
             allowNull: false,
+        },
+
+        summary: {
+            type: DataTypes.TEXT,
+            allowNull: true
         }
 
     },

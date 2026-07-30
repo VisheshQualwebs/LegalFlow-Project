@@ -157,7 +157,7 @@ const Signup = () => {
                                 className="w-full bg-transparent border border-gray-500 rounded-lg py-4 px-5 placeholder:text-gray-500 focus:outline-none focus:border-white" />
                             {errors.phone && (<p className="text-red-500 text-sm">{errors.phone}</p>)}
 
-                            <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} minLength={6} maxLength={16}
+                            <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} maxLength={16} minLength={6}
                                 className="w-full bg-transparent border border-gray-500 rounded-lg py-4 px-5 placeholder:text-gray-500 focus:outline-none focus:border-white" />
                             {errors.password && (<p className="text-red-500 text-sm">{errors.password}</p>)}
 

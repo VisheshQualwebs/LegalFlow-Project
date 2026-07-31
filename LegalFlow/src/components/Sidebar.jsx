@@ -64,7 +64,7 @@ const Sidebar = () => {
         {
             title: "Profile",
             url: "/profile",
-            visible_roles: ["client", "lawyer"],
+            visible_roles: ["client", "lawyer", "admin"],
         },
         {
             title: "Settings",
@@ -80,9 +80,7 @@ const Sidebar = () => {
             </h2>
 
             <nav className="space-y-5">
-                {menus.filter((menu) =>
-                    menu.visible_roles.includes(user.role)
-                ).map((menu) => (
+                {menus.filter((menu) => menu.visible_roles.includes(user.role)).map((menu) => (
                     <Link key={menu.title} to={menu.url} className="block hover:text-gray-400">
                         {menu.title}
                     </Link>

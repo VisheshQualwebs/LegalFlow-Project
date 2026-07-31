@@ -79,7 +79,7 @@ function Settings() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
+        <div className="max-w-lg mx-auto pt-10 px-6">
             <div className="w-full max-w-lg">
                 <h1 className="text-3xl font-bold text-center mb-6">Add Admin</h1>
                 <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-lg p-6 space-y-5">

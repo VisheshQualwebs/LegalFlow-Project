@@ -17,7 +17,8 @@ export const routeConfig = {
         { path: "manage-lawyers", element: <ManageLawyers /> },
         { path: "view-cases", element: <ViewCase /> },
         { path: "settings", element: <Settings /> },
-        { path: "assign-lawyers", element: <AssignLawyers /> }
+        { path: "assign-lawyers", element: <AssignLawyers /> },
+        { path: "profile", element: <Profile /> },
     ],
 
     lawyer: [

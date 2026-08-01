@@ -80,7 +80,7 @@ const UserDashboard = () => {
             </div>
 
             <div className="mt-6">
-                <RecentCases cases={stats.recentCases} viewUrl={viewUrl} />
+                <RecentCases cases={stats.recentCases} viewUrl={recentCasesViewUrl} />
             </div>
 
             <div className="mt-6">

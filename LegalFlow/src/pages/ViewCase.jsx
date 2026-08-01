@@ -11,7 +11,7 @@ function ViewCase() {
     const fetchCases = async (selectedStatus = "all") => {
         try {
             const params = selectedStatus === "all" ? {} : { status: selectedStatus };
-            const response = await caseService.lists(params);
+            const response = await caseService.list(params);
             setCases(response.data.data);
         } catch (error) {
             console.error(error);

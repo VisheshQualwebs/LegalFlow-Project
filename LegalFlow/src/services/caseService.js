@@ -1,8 +1,8 @@
 import api from "./api";
 
-const list = () => api.get("/cases");
+// const list = () => api.get("/cases");
 
-const lists = (params) => api.get("/cases", { params })
+const list = (params = {}) => api.get("/cases", { params })
 
 // const create = (payload) => api.post("/cases", payload);
 
@@ -15,4 +15,4 @@ const create = async (data) => {
     return resp.data;
 }
 
-export default { list, create, update, lists, remove };
+export default { list, create, update, remove };

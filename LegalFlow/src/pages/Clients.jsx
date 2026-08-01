@@ -7,7 +7,7 @@ function Clients() {
 
     const loadClients = async () => {
         try {
-            const response = await caseService.lists();
+            const response = await caseService.list();
             setCases(response.data.data);
         } catch (error) {
             console.error(error);

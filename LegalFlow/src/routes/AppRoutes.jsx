@@ -6,6 +6,7 @@ import Login from "../pages/auth/Login";
 import Signup from "../pages/auth/Signup";
 import ProtectedRoutes from "./ProtectedRoutes";
 import { routeConfig } from "./routeConfig";
+import Home from "../pages/Home";
 
 function AppRoutes() {
     let user = null;
@@ -21,7 +22,8 @@ function AppRoutes() {
     }
     return (
         <Routes>
-            <Route path="/" element={<Navigate to="/login" replace />} />
+            {/* <Route path="/" element={<Navigate to="/login" replace />} /> */}
+            <Route path="/" element={<Home />} />
             <Route element={<AuthLayout />}>
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />

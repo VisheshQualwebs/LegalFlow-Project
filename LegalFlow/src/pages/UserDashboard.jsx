@@ -32,7 +32,8 @@ const UserDashboard = () => {
     if (!user) return null;
 
     const isAdmin = user.role === "admin";
-    const viewUrl = isAdmin ? "/view-cases" : "/upcoming-hearings";
+    const hearingViewUrl = "/upcoming-hearings";
+    const recentCasesViewUrl = isAdmin ? "/view-cases" : "/my-cases";
 
     const quickActions = {
         admin: [
@@ -75,7 +76,7 @@ const UserDashboard = () => {
                     </div>
                 </div>
 
-                <UpcomingHearings hearings={stats.upcomingHearings} viewUrl={viewUrl} />
+                <UpcomingHearings hearings={stats.upcomingHearings} viewUrl={hearingViewUrl} />
             </div>
 
             <div className="mt-6">

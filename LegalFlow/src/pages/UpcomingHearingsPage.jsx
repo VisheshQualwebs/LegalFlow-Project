@@ -16,7 +16,8 @@ const UpcomingHearingsPage = () => {
                 const cases = data.data || [];
 
                 const hearings = cases
-                    .filter(item =>
+                    .filter(item => 
+                        user.role === "admin" ||
                         user.role === "lawyer"
                             ? (item.lawyerId) === (user.id)
                             : (item.clientId) === (user.id)

@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import googleLogo from "../../assets/images/google.png";
 import leftImage from "../../assets/images/left-side.jpeg";
-import { ADMIN } from "../../utils/admin";
 import { login } from "../../services/authService";
 
 const Login = () => {
@@ -14,7 +13,6 @@ const Login = () => {
     const [formData, setFormData] = useState({
         email: "",
         password: "",
-        remember: false,
     });
 
     const [showPassword, setShowPassword] = useState(false);
@@ -71,20 +69,10 @@ const Login = () => {
 
 
             alert(response.message);
+            setTimeout(() => {
+                navigate("/dashboard");
+            }, 100);
 
-            if (user.role === "admin") {
-                setTimeout(() => {
-                    navigate("/dashboard");
-                }, 100);
-            } else if (user.role === "lawyer") {
-                setTimeout(() => {
-                    navigate("/dashboard");
-                }, 100);;
-            } else if (user.role === "client") {
-                setTimeout(() => {
-                    navigate("/dashboard");
-                }, 100);;
-            }
         } catch (error) {
             // console.log("Login Error:", error);
             // console.log("Response:", error.response);
@@ -100,14 +88,14 @@ const Login = () => {
 
     return (
         <div className="bg-gray-200 min-h-screen flex items-center justify-center">
-            <div className="w-[1200px] h-[700px] rounded-[30px] overflow-hidden shadow-2xl border border-gray-400 grid grid-cols-2">
-                <div className="bg-white flex flex-col items-center justify-center px-16">
-                    <img src={leftImage} alt="Image" className="w-96 mb-8" />
-                    <h1 className="text-5xl font-bold mb-6">
+            <div className="w-full max-w-[1200px] min-h-[700px] mx-4 sm:mx-6 lg:mx-8 rounded-[30px] overflow-hidden shadow-2xl border border-gray-400 grid grid-cols-1 lg:grid-cols-2">
+                <div className="bg-white flex flex-col items-center justify-center px-6 sm:px-10 lg:px-16 py-12 lg:py-0">
+                    <img src={leftImage} alt="Image" className="w-48 sm:w-64 lg:w-96 mb-8" />
+                    <h1 className="text-4xl sm:text-5xl font-bold mb-6">
                         Welcome!
                     </h1>
 
-                    <p className="text-center text-gray-600 text-lg leading-8 max-w-md">
+                    <p className="text-center text-gray-600 text-base sm:text-lg leading-7 sm:leading-8 max-w-md">
                         Optimize legal operations with our comprehensive platform,
                         empowering you to automate document creation, efficiently
                         manage contracts, and mitigate risk, all in one streamlined
@@ -116,14 +104,12 @@ const Login = () => {
                 </div>
 
 
-                <div className="bg-black text-white flex items-center justify-center">
-                    <div className="w-[430px]">
-                        <h2 className="text-5xl font-bold text-center mb-12">
-                            LegalFlow
+                <div className="bg-black text-white flex items-center justify-center px-6 sm:px-10 py-12 lg:py-0">
+                    <div className="w-full max-w-[430px]">
+                        <h2 className="text-4xl sm:text-5xl font-bold text-center mb-8 sm:mb-12">                            LegalFlow
                         </h2>
 
-                        <h3 className="text-3xl font-semibold text-center mb-2">
-                            Login
+                        <h3 className="text-2xl sm:text-3xl font-semibold text-center mb-2">                            Login
                         </h3>
 
                         <p className="text-center text-gray-400 mb-10">
@@ -164,7 +150,7 @@ const Login = () => {
                             </button>
                         </form>
 
-                        <button className="w-full border border-gray-500 rounded-lg py-4 mt-6 flex items-center justify-center gap-3 hover:bg-gray-900">
+                        <button className="w-full border border-gray-500 rounded-lg py-4 mt-6 flex items-center justify-center gap-3 hover:bg-gray-900" onClick={() => alert("Google Login is not enable")} >
                             <img src={googleLogo} alt="Google" className="w-6" />
                             <span>Sign in with Google</span>
                         </button>

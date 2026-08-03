@@ -3,7 +3,7 @@ const { Op } = require("sequelize");
 const { Case, User } = require("../models");
 const { sendMail } = require("../utils/mail");
 
-cron.schedule("0 7 * * *", async () => {
+cron.schedule("* * * * *", async () => {
     try {
         console.log("Checking upcoming hearings...");
 

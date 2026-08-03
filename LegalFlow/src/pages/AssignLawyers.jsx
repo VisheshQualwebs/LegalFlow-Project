@@ -16,29 +16,17 @@ const AssignLawyers = () => {
         try {
             const caseResponse = await caseService.list();
             const userResponse = await userService.list();
-            setCases(
-                caseResponse.data.data.filter(
-                    item => !item.lawyerId
-                )
-            );
-
-            setLawyers(
-                userResponse.data.data.filter(
-                    user => user.role === "lawyer" && user.status === "approved"
-                )
-            );
+            setCases(caseResponse.data.data.filter(item => !item.lawyerId));
+            setLawyers(userResponse.data.data.filter(user => user.role === "lawyer" && user.status === "approved"));
         } catch (error) {
             console.error(error);
+            throw error;
         }
-
     };
 
     const handleAssign = async (caseId, lawyerId) => {
         if (!lawyerId) return;
-        await caseService.update(caseId, {
-            lawyerId,
-        });
-
+        await caseService.update(caseId, { lawyerId });
         loadData();
     };
 
@@ -59,37 +47,32 @@ const AssignLawyers = () => {
                     </thead>
 
                     <tbody className="text-center">
-                        {cases.map(item => (
-                            <tr key={item.id}>
-                                <td className="p-3 break-words">{item.title}</td>
-                                <td className="p-3">{item.client.fullName}</td>
-                                <td className="p-3">
-                                    <select
-                                        defaultValue=""
-                                        onChange={(e) =>
-                                            handleAssign(
-                                                item.id,
-                                                e.target.value
-                                            )
-                                        }
-                                        className="border p-2 rounded"
-                                    >
-                                        <option value="">
-                                            Select Lawyer
-                                        </option>
-                                        {lawyers.map(lawyer => (
-                                            <option
-                                                key={lawyer.id}
-                                                value={lawyer.id}
-                                            >
-                                                {lawyer.fullName}
+                        {cases.length > 0 ? (
+                            cases.map(item => (
+                                <tr key={item.id}>
+                                    <td className="p-3 break-words">{item.title}</td>
+                                    <td className="p-3">{item.client.fullName}</td>
+                                    <td className="p-3">
+                                        <select defaultValue="" onChange={(e) => handleAssign(item.id, e.target.value)} className="border p-2 rounded">
+                                            <option value="">
+                                                Select Lawyer
                                             </option>
-                                        ))}
-                                    </select>
+                                            {lawyers.map(lawyer => (
+                                                <option key={lawyer.id} value={lawyer.id}>
+                                                    {lawyer.fullName}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </td>
+                                    <td className="p-3">Pending</td>
+                                </tr>
+                            ))) : (
+                            <tr>
+                                <td colSpan={4} className="p-6 text-gray-500 text-center italic">
+                                    No cases found to assign.
                                 </td>
-                                <td className="p-3">Pending</td>
                             </tr>
-                        ))}
+                        )}
                     </tbody>
                 </table>
             </div>

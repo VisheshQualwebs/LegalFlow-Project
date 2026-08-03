@@ -13,8 +13,6 @@ const list = async (params = {}) => {
 
 const update = (id, payload) => api.patch(`/users/${id}`, payload);
 
-const remove = (id) => api.delete(`/users/${id}`);
-
 const read = (id) => {
     return api.get(`/users/${id}`);
 };

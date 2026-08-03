@@ -25,14 +25,12 @@ const downloadDocument = async (id) => {
     });
 
     const url = window.URL.createObjectURL(response.data);
-
     const a = document.createElement("a");
     a.href = url;
     a.download = "";
     document.body.appendChild(a);
     a.click();
     a.remove();
-
     window.URL.revokeObjectURL(url);
 }
 

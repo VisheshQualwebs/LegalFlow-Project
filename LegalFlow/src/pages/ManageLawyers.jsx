@@ -37,7 +37,7 @@ function ManageLawyers() {
 
             <div className="bg-white rounded-xl shadow-lg overflow-hidden">
                 <table className="w-full">
-                    <thead className="bg-black text-white">
+                    <thead className="bg-black text-white text-center">
                         <tr>
                             <th className="p-4 text-left">Name</th>
                             <th className="p-4 text-left">Email</th>

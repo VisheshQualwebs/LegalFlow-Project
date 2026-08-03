@@ -18,23 +18,10 @@ const UpcomingHearings = ({ hearings = [], viewUrl }) => {
                     {hearings.map((hearing) => (
                         <div key={hearing.id} className="border rounded-lg p-4 flex justify-between">
                             <div>
-                                <h3 className="font-semibold">
-                                    {hearing.title}
-                                </h3>
-
-                                <p className="text-sm text-gray-500">
-                                    {hearing.court}
-                                </p>
+                                <h3 className="font-semibold">{hearing.title}</h3>
                             </div>
-
                             <div className="text-right">
-                                <p className="font-semibold">
-                                    {hearing.hearingDate}
-                                </p>
-
-                                <p className="text-sm text-gray-500">
-                                    {hearing.hearingTime}
-                                </p>
+                                <p className="font-semibold">{hearing.hearingDate}</p>
                             </div>
                         </div>
                     ))}

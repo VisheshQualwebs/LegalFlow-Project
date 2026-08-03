@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-
 import caseService from "../services/caseService";
 import userService from "../services/userService";
+import { Skeleton } from "boneyard-js/react";
 
 const AssignLawyers = () => {
-
+    const [loading, setLoading] = useState(true);
     const [cases, setCases] = useState([]);
     const [lawyers, setLawyers] = useState([]);
 
@@ -21,6 +21,8 @@ const AssignLawyers = () => {
         } catch (error) {
             console.error(error);
             throw error;
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -31,52 +33,54 @@ const AssignLawyers = () => {
     };
 
     return (
-        <div>
-            <h1 className="text-3xl font-bold mb-6">
-                Assign Lawyers
-            </h1>
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-                <table className="w-full bg-white shadow">
-                    <thead className="bg-black text-white">
-                        <tr>
-                            <th className="p-3">Case</th>
-                            <th className="p-3">Client</th>
-                            <th className="p-3">Lawyer</th>
-                            <th className="p-3">Action</th>
-                        </tr>
-                    </thead>
-
-                    <tbody className="text-center">
-                        {cases.length > 0 ? (
-                            cases.map(item => (
-                                <tr key={item.id}>
-                                    <td className="p-3 break-words">{item.title}</td>
-                                    <td className="p-3">{item.client.fullName}</td>
-                                    <td className="p-3">
-                                        <select defaultValue="" onChange={(e) => handleAssign(item.id, e.target.value)} className="border p-2 rounded">
-                                            <option value="">
-                                                Select Lawyer
-                                            </option>
-                                            {lawyers.map(lawyer => (
-                                                <option key={lawyer.id} value={lawyer.id}>
-                                                    {lawyer.fullName}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </td>
-                                    <td className="p-3">Pending</td>
-                                </tr>
-                            ))) : (
+        <Skeleton name="assign-lawyer" loading={loading}>
+            <div>
+                <h1 className="text-3xl font-bold mb-6">
+                    Assign Lawyers
+                </h1>
+                <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <table className="w-full bg-white shadow">
+                        <thead className="bg-black text-white">
                             <tr>
-                                <td colSpan={4} className="p-6 text-gray-500 text-center italic">
-                                    No cases found to assign.
-                                </td>
+                                <th className="p-3">Case</th>
+                                <th className="p-3">Client</th>
+                                <th className="p-3">Lawyer</th>
+                                <th className="p-3">Action</th>
                             </tr>
-                        )}
-                    </tbody>
-                </table>
+                        </thead>
+
+                        <tbody className="text-center">
+                            {cases.length > 0 ? (
+                                cases.map(item => (
+                                    <tr key={item.id}>
+                                        <td className="p-3 break-words">{item.title}</td>
+                                        <td className="p-3">{item.client.fullName}</td>
+                                        <td className="p-3">
+                                            <select defaultValue="" onChange={(e) => handleAssign(item.id, e.target.value)} className="border p-2 rounded">
+                                                <option value="">
+                                                    Select Lawyer
+                                                </option>
+                                                {lawyers.map(lawyer => (
+                                                    <option key={lawyer.id} value={lawyer.id}>
+                                                        {lawyer.fullName}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </td>
+                                        <td className="p-3">Pending</td>
+                                    </tr>
+                                ))) : (
+                                <tr>
+                                    <td colSpan={4} className="p-6 text-gray-500 text-center italic">
+                                        No cases found to assign.
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
+        </Skeleton>
     );
 };
 

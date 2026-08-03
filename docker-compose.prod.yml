@@ -14,8 +14,8 @@ services:
       DB_NAME: legalflow
       DB_USER: postgres
       NODE_ENV: production
-      DB_PASSWORD: ${{ DB_PASSWORD }}
-      JWT_SECRET: ${{ JWT_SECRET }}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
 
     restart: always
 

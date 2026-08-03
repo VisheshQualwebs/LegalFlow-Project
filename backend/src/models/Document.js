@@ -4,7 +4,6 @@ const sequelize = require("../config/database");
 const Document = sequelize.define(
     "Document",
     {
-
         id: {
             type: DataTypes.INTEGER,
             autoIncrement: true,
@@ -56,7 +55,6 @@ const Document = sequelize.define(
             type: DataTypes.TEXT,
             allowNull: true
         }
-
     },
     {
         tableName: "documents",

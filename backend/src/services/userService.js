@@ -24,9 +24,7 @@ const read = async (currentUser, id, query) => {
     if (currentUser.role !== "admin" && currentUser.id != id) {
         throw new Error("Access Denied!!");
     }
-
     const payload = { id };
-
     const options = {
         attributes: ["id", "fullName", "email", "role", "status", "createdAt"]
     };
@@ -76,7 +74,6 @@ const read = async (currentUser, id, query) => {
     if (!user) {
         throw new Error("User not found");
     }
-
     return user;
 };
 
@@ -99,9 +96,8 @@ const update = async (currentUser, id, body) => {
         Object.assign(user, body);
     } else if (currentUser.id == id) {
         delete body.role,
-            delete body.status,
-
-            Object.assign(user, body);
+        delete body.status,
+        Object.assign(user, body);
     } else {
         throw new Error("Access Denied");
     }
@@ -111,17 +107,13 @@ const update = async (currentUser, id, body) => {
 };
 
 const remove = async (currentUser, id) => {
-
     if (currentUser.role !== "admin") {
         throw new Error("Access Denied");
     }
-
     const user = await User.findByPk(id);
-
     if (!user) {
         throw new Error("User Not Found!!");
     }
-
     await user.destroy();
     return true;
 }

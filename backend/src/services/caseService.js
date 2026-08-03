@@ -33,7 +33,9 @@ const list = async (user, query) => {
         }
     }
 
-    if (query.status) { payload.status = query.status }
+    if (query.status) { 
+        payload.status = query.status 
+    }
 
     options.include = [
         {
@@ -79,12 +81,10 @@ const read = async (currentUser, id) => {
     if (currentUser.role === "lawyer" && data.lawyerId !== currentUser.id) {
         throw new Error("Access denied");
     }
-
     return data;
 };
 
 const update = async (id, user, body) => {
-
     const data = await Case.findByPk(id);
 
     if (!data) {
@@ -108,7 +108,6 @@ const update = async (id, user, body) => {
         })
         data.status = body.status;
     }
-
     await data.save();
     return data;
 };
@@ -132,7 +131,6 @@ const destroy = async (id, user) => {
     if (data.clientId !== user.id) {
         throw new Error("Access denied");
     }
-
     await data.destroy();
 }
 

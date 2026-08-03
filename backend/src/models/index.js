@@ -2,16 +2,6 @@ const User = require("./User");
 const Case = require("./Case");
 const Document = require("./Document")
 
-// User.hasOne(Lawyer, {
-//     foreignKey: "userId",
-//     as: "lawyerDetails",
-// });
-
-// Lawyer.belongsTo(User, {
-//     foreignKey: "userId",
-//     as: "user",
-// });
-
 User.hasMany(Case, {
     foreignKey: "clientId",
     as: "clientCases",

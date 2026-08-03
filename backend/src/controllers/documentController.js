@@ -13,25 +13,20 @@ const list = async (req, resp) => {
 
 const viewDocument = async (req, resp) => {
     const document = await Document.findByPk(req.params.id);
-
     if (!document) {
         return resp.code(404).send({
             success: false,
             message: "Document not found"
         });
     }
-
     const fullPath = path.join(process.cwd(), document.filePath);
-
     if (!fs.existsSync(fullPath)) {
         return resp.code(404).send({
             success: false,
             message: "File not found on disk"
         });
     }
-
     resp.type(document.fileType);
-
     return resp.send(fs.createReadStream(fullPath));
 };
 

@@ -33,7 +33,6 @@ const User = sequelize.define("User", {
         allowNull: false,
         defaultValue: "pending",
     },
-
 }, {
     tableName: "users",
     timestamps: true,

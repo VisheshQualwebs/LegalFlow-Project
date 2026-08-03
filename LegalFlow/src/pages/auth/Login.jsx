@@ -5,11 +5,8 @@ import leftImage from "../../assets/images/left-side.jpeg";
 import { login } from "../../services/authService";
 
 const Login = () => {
-
     const navigate = useNavigate();
-
     const [errors, setErrors] = useState({});
-
     const [formData, setFormData] = useState({
         email: "",
         password: "",
@@ -28,15 +25,12 @@ const Login = () => {
 
     const validateForm = () => {
         const newErrors = {};
-
         if (!formData.email.trim()) {
             newErrors.email = "Email is required";
         }
-
         if (!formData.password.trim()) {
             newErrors.password = "Password is required";
         }
-
         return newErrors;
     };
 
@@ -66,7 +60,6 @@ const Login = () => {
             localStorage.setItem("token", token);
             localStorage.setItem("user", JSON.stringify(user));
             // console.log("Stored:", localStorage.getItem("user"));
-
 
             alert(response.message);
             setTimeout(() => {

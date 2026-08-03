@@ -7,6 +7,7 @@ import QuickActions from "../components/QuickActions";
 import dashboardConfig from "../services/dashboardConfig";
 import dashboardService from "../services/dashboardService";
 import useAuth from "../hooks/useAuth";
+import { Skeleton } from "boneyard-js/react";
 
 const UserDashboard = () => {
     const { user } = useAuth();
@@ -28,7 +29,7 @@ const UserDashboard = () => {
         loadDashboard();
     }, [user?.role, user?.id]);
 
-    if (loading) return <h2>Loading dashboard...</h2>;
+    // if (loading) return <h2>Loading dashboard...</h2>;
     if (!user) return null;
 
     const isAdmin = user.role === "admin";
@@ -56,37 +57,39 @@ const UserDashboard = () => {
     };
 
     return (
-        <div>
-            <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
+        <Skeleton name="user-dashboard" loading={loading} >
+            <div>
+                <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-                {(dashboardConfig[user.role] || []).map(card => (
-                    <DashboardCard key={card.key} title={card.title} value={stats[card.key] ?? 0} />
-                ))}
-            </div>
-
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-6">
-                <div className="bg-white rounded-xl shadow p-6">
-                    <h2 className="text-xl font-semibold mb-6">{isAdmin ? "Case Overview" : "My Case Overview"}</h2>
-                    <div className="space-y-5">
-                        <StatusBar label="Pending" value={stats.pendingCases} total={stats.totalCases} />
-                        <StatusBar label="Assigned" value={stats.assignedCases} total={stats.totalCases} />
-                        <StatusBar label="In Progress" value={stats.inProgressCases} total={stats.totalCases} />
-                        <StatusBar label="Completed" value={stats.completedCases} total={stats.totalCases} />
-                    </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+                    {(dashboardConfig[user.role] || []).map(card => (
+                        <DashboardCard key={card.key} title={card.title} value={stats[card.key] ?? 0} />
+                    ))}
                 </div>
 
-                <UpcomingHearings hearings={stats.upcomingHearings} viewUrl={hearingViewUrl} />
-            </div>
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-6">
+                    <div className="bg-white rounded-xl shadow p-6">
+                        <h2 className="text-xl font-semibold mb-6">{isAdmin ? "Case Overview" : "My Case Overview"}</h2>
+                        <div className="space-y-5">
+                            <StatusBar label="Pending" value={stats.pendingCases} total={stats.totalCases} />
+                            <StatusBar label="Assigned" value={stats.assignedCases} total={stats.totalCases} />
+                            <StatusBar label="In Progress" value={stats.inProgressCases} total={stats.totalCases} />
+                            <StatusBar label="Completed" value={stats.completedCases} total={stats.totalCases} />
+                        </div>
+                    </div>
 
-            <div className="mt-6">
-                <RecentCases cases={stats.recentCases} viewUrl={recentCasesViewUrl} />
-            </div>
+                    <UpcomingHearings hearings={stats.upcomingHearings} viewUrl={hearingViewUrl} />
+                </div>
 
-            <div className="mt-6">
-                <QuickActions actions={quickActions[user.role] || []} />
+                <div className="mt-6">
+                    <RecentCases cases={stats.recentCases} viewUrl={recentCasesViewUrl} />
+                </div>
+
+                <div className="mt-6">
+                    <QuickActions actions={quickActions[user.role] || []} />
+                </div>
             </div>
-        </div>
+        </Skeleton>
     );
 };
 

@@ -1,0 +1,19 @@
+{
+    "breakpoints": [375, 768, 1280],
+    "out": "./src/bones",
+    "wait": 1500,
+    "routes": [
+        "/dashboard",
+        "/manage-lawyers",
+        "/view-cases",
+        "/settings",
+        "/assign-lawyers",
+        "/profile",
+        "/upcoming-hearings",
+        "/my-cases",
+        "/clients",
+        "/document",
+        "/manage-cases",
+        "/create-case"
+    ]
+}

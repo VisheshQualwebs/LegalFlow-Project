@@ -17,4 +17,4 @@ const read = (id) => {
     return api.get(`/users/${id}`);
 };
 
-export default { list, update, remove, read, };
+export default { list, update, read, };

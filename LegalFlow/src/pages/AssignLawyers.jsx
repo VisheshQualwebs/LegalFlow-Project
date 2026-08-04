@@ -2,11 +2,14 @@ import { useEffect, useState } from "react";
 import caseService from "../services/caseService";
 import userService from "../services/userService";
 import { Skeleton } from "boneyard-js/react";
+import MessageModal from "../components/MessageModal";
 
 const AssignLawyers = () => {
     const [loading, setLoading] = useState(true);
     const [cases, setCases] = useState([]);
     const [lawyers, setLawyers] = useState([]);
+    const [message, setMessage] = useState("");
+    const [messageType, setMessageType] = useState("");
 
     useEffect(() => {
         loadData();
@@ -28,8 +31,16 @@ const AssignLawyers = () => {
 
     const handleAssign = async (caseId, lawyerId) => {
         if (!lawyerId) return;
-        await caseService.update(caseId, { lawyerId });
-        loadData();
+        try {
+            await caseService.update(caseId, { lawyerId });
+            loadData();
+            setMessage("Lawyer assigned successfully");
+            setMessageType("success");
+        } catch (error) {
+            console.error(error);
+            setMessage("Failed to assign lawyer");
+            setMessageType("error");
+        }
     };
 
     return (
@@ -77,6 +88,7 @@ const AssignLawyers = () => {
                                 </tr>
                             )}
                         </tbody>
+                        {message && (<MessageModal message={message} type={messageType} onClose={() => setMessage("")} />)}
                     </table>
                 </div>
             </div>

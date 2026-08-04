@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import userService from "../services/userService";
 import { Skeleton } from "boneyard-js/react";
+import MessageModal from "../components/MessageModal";
 
 function ManageLawyers() {
     const [lawyers, setLawyers] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [message, setMessage] = useState("");
+    const [messageType, setMessageType] = useState("");
     const loadLawyers = async () => {
         try {
             const response = await userService.list({ role: "lawyer" });
@@ -16,7 +19,6 @@ function ManageLawyers() {
         }
     };
 
-
     useEffect(() => {
         loadLawyers();
     }, []);
@@ -26,17 +28,21 @@ function ManageLawyers() {
             const response = await userService.update(id, { status });
             console.log(response);
             loadLawyers();
+            setMessage(`Lawyer status updated to ${status}`);
+            setMessageType("success");
         } catch (error) {
             console.error(error);
+            setMessage("Failed to update lawyer status");
+            setMessageType("error");
         }
     }
 
     return (
-        <div className="max-w-7xl mx-auto p-8">
-            <h1 className="text-4xl font-bold mb-8">
-                Manage Lawyers
-            </h1>
-            <Skeleton name="manage-lawyer-page" loading={loading}>
+        <Skeleton name="manage-lawyer-page" loading={loading}>
+            <div>
+                <h1 className="text-4xl font-bold mb-8">
+                    Manage Lawyers
+                </h1>
                 <div className="bg-white rounded-xl shadow-lg overflow-hidden">
                     <table className="w-full">
                         <thead className="bg-black text-white text-center">
@@ -96,10 +102,11 @@ function ManageLawyers() {
                                 </tr>
                             )}
                         </tbody>
+                        {message && (<MessageModal message={message} type={messageType} onClose={() => setMessage("")} />)}
                     </table>
                 </div>
-            </Skeleton>
-        </div>
+            </div >
+        </Skeleton>
     );
 };
 

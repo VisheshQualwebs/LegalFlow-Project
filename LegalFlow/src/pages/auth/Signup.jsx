@@ -2,11 +2,12 @@ import { useState } from "react";
 import leftImage from "../../assets/images/left-side.jpeg"
 import { Link, useNavigate } from "react-router-dom";
 import { signup } from "../../services/authService";
+import MessageModal from "../../components/MessageModal";
 
 const Signup = () => {
-
+    const [message, setMessage] = useState("");
+    const [messageType, setMessageType] = useState("");
     const navigate = useNavigate();
-
     const handleChange = (e) => {
         const { name, value, files } = e.target;
         setFormData((prev) => ({
@@ -92,11 +93,15 @@ const Signup = () => {
         try {
             const response = await signup(formData);
             console.log(response)
-            alert(response.message);
+            // alert(response.message);
+            setMessage(response.data.message || "Accout Created Successfully");
+            setMessageType("success");
             navigate("/login");
         } catch (error) {
             console.log(error);
-            alert(error.response?.data?.message || "Signup Failed");
+            // alert(error.response?.data?.message || "Signup Failed");
+            setMessage(error.response?.data?.message || "Signup Failed");
+            setMessageType("error");
         }
 
         setFormData({
@@ -184,6 +189,9 @@ const Signup = () => {
                             <button type="submit" className="w-full bg-white text-black font-semibold py-4 rounded-lg hover:bg-gray-300 transition">
                                 Create Account
                             </button>
+                            {message && (
+                                <MessageModal message={message} type={messageType} onClose={() => setMessage("")} />
+                            )}
 
                             <p className="text-center text-gray-400 mt-6">
                                 Already have an account?{" "}

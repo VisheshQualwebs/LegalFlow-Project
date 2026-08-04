@@ -1,12 +1,16 @@
-import { useEffect, useState } from "react";
-import caseService from "../services/caseService";
-import useAuth from "../hooks/useAuth";
 import { Skeleton } from "boneyard-js/react";
+import { useEffect, useState } from "react";
+import useAuth from "../hooks/useAuth";
+import caseService from "../services/caseService";
+import MessageModal from "../components/MessageModal";
 
 function ViewCase() {
     const [cases, setCases] = useState([]);
     const [status, setStatus] = useState("all");
     const [loading, setLoading] = useState(true);
+    const [message, setMessage] = useState("");
+    const [messageType, setMessageType] = useState("");
+    const [deleteCaseId, setDeleteCaseId] = useState(null);
     const { user } = useAuth();
 
     const fetchCases = async (selectedStatus = "all") => {
@@ -26,15 +30,27 @@ function ViewCase() {
     }, [status]);
 
     const handleDelete = async (id) => {
-        const confirmDelete = window.confirm("Are you sure you want to delete this case?");
-        if (!confirmDelete) {
-            return;
-        }
+        // const confirmDelete = window.confirm("Are you sure you want to delete this case?");
+        // if (!confirmDelete) {
+        //     return;
+        // }
+        setDeleteCaseId(id);
+        setMessage("Are you sure you want to delete this case?");
+        setMessageType("confirm");
+    }
+
+    const handleConfirmDelete = async () => {
         try {
-            await caseService.remove(id);
-            fetchCases(status);
+            await caseService.remove(deleteCaseId);
+            await fetchCases(status);
+            setDeleteCaseId(null);
+            setMessage("Case deleted successfully");
+            setMessageType("success");
         } catch (error) {
-            console.log(error);
+            console.error(error);
+            setMessage("Failed to delete case");
+            setMessageType("error");
+            setDeleteCaseId(null);
         }
     }
 
@@ -56,8 +72,8 @@ function ViewCase() {
     };
 
     return (
-        <div className="max-w-7xl mx-auto p-8">
-            <Skeleton name="view-cases-page" loading={loading}>
+        <Skeleton name="view-cases-page" loading={loading}>
+            <div>
                 <div className="flex justify-between items-center mb-8">
                     <div>
                         <h1 className="text-4xl font-bold">Cases</h1>
@@ -143,9 +159,12 @@ function ViewCase() {
                             )}
                         </tbody>
                     </table>
+                    {message && (<MessageModal message={message} type={messageType}
+                         onClose={() =>{setMessage(""), setDeleteCaseId(null)}}
+                         onConfirm={handleConfirmDelete} confirmText="Delete" />)}
                 </div>
-            </Skeleton>
-        </div>
+            </div>
+        </Skeleton>
     );
 }
 

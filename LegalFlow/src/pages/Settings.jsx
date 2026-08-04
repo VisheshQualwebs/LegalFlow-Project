@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { signup } from "../services/authService";
+import MessageModal from "../components/MessageModal";
 
 function Settings() {
+    const [message, setMessage] = useState("");
+    const [messageType, setMessageType] = useState("");
     const [form, setForm] = useState({
         fullName: "",
         email: "",
@@ -63,7 +66,9 @@ function Settings() {
 
         try {
             const response = await signup(form);
-            alert("Admin Added Successfully");
+            // alert("Admin Added Successfully");
+            setMessage(response.data.message || "Admin Added Successfully");
+            setMessageType("success");
             setForm({
                 fullName: "",
                 email: "",
@@ -74,14 +79,16 @@ function Settings() {
             });
         } catch (error) {
             console.error("Error adding admin:", error);
-            alert(error.response?.data?.message || "Failed to add admin. Please try again.");
+            // alert(error.response?.data?.message || "Failed to add admin. Please try again.");
+            setMessage(error.response?.data?.message || "Failed to add admin. Please try again.");
+            setMessageType("error");
         }
     }
 
     return (
-        <div className="max-w-lg mx-auto pt-10 px-6">
+        <div>
             <div className="w-full max-w-lg">
-                <h1 className="text-3xl font-bold text-center mb-6">Add Admin</h1>
+                <h1 className="text-3xl font-bold mb-6">Add Admin</h1>
                 <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-lg p-6 space-y-5">
                     <input type="text" name="fullName" value={form.fullName} onChange={handleChange} placeholder="Enter Name" className="w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                     {error.fullName && (<p className="text-red-500 text-sm">{error.fullName} </p>)}
@@ -100,6 +107,7 @@ function Settings() {
 
                     <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition">Add</button>
                 </form>
+                {message && (<MessageModal message={message} type={messageType} onClose={() => setMessage("")} />)}
             </div>
         </div>
     )

@@ -1,9 +1,12 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import MessageModal from "./MessageModal";
 
 const Navbar = () => {
-
+    const [message, setMessage] = useState("");
+    const [messageType, setMessageType] = useState("");
+    const [logout, setLogout] = useState(false);
     let user = null;
-
     try {
         const storedUser = localStorage.getItem("user");
         if (storedUser && storedUser !== "undefined") {
@@ -17,11 +20,26 @@ const Navbar = () => {
     const navigate = useNavigate();
 
     const handleLogout = () => {
-        const confirmLogout = window.confirm("Are you sure you want to logout?");
-        if (!confirmLogout) return;
-        localStorage.removeItem("user");
-        localStorage.removeItem("token");
-        navigate("/");
+        // const confirmLogout = window.confirm("Are you sure you want to logout?");
+        // if (!confirmLogout) return;
+        // localStorage.removeItem("user");
+        // localStorage.removeItem("token");
+        // navigate("/");
+        setLogout(true);
+        setMessage("Are you sure you want to logout?");
+        setMessageType("confirm");
+    }
+
+    const handleConfirmLogout = () => {
+        try {
+            localStorage.removeItem("user");
+            localStorage.removeItem("token");
+            navigate("/");
+        } catch (error) {
+            console.log(error);
+            setMessage("Failed to logout");
+            setMessageType("error");
+        }
     }
 
     return (
@@ -50,6 +68,11 @@ const Navbar = () => {
                         Logout
                     </button>
                 </div>
+            )}
+            {message && (
+                <MessageModal message={message} type={messageType}
+                    onClose={() => { setMessage(""), setLogout(false) }}
+                    onConfirm={handleConfirmLogout} confirmText="Logout" />
             )}
         </div>
     );

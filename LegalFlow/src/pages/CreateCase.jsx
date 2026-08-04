@@ -2,10 +2,13 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import caseService from "../services/caseService";
 import { Skeleton } from "boneyard-js/react";
+import MessageModal from "../components/MessageModal";
 
 const CreateCase = () => {
     const [errors, setErrors] = useState({});
     const navigate = useNavigate();
+    const [message, setMessage] = useState("");
+    const [messageType, setMessageType] = useState("");
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -15,7 +18,7 @@ const CreateCase = () => {
 
         return () => clearTimeout(timer);
     }, []);
-    
+
     const validateForm = () => {
         const newErrors = {};
         if (!formData.title.trim()) {
@@ -58,7 +61,8 @@ const CreateCase = () => {
                     return;
                 }
                 if (!allowedTypes.includes(file.type)) {
-                    alert("Only Pdf files are allowed.")
+                    // alert("Only Pdf files are allowed.")
+                    setErrors({ file: 'Only PDF files are allowed.' });
                     e.target.value = "";
                     return;
                 }
@@ -98,16 +102,20 @@ const CreateCase = () => {
 
         try {
             await caseService.create(data);
-            alert("Case Registered Successfully");
+            // alert("Case Registered Successfully");
+            setMessage("Case Registered Successfully");
+            setMessageType("success");
             navigate("/my-cases");
         } catch (error) {
-            alert(error.message || "Unable to create case");
+            // alert(error.message || "Unable to create case");
+            setMessage(error.message || "Unable to create case");
+            setMessageType("error");
         }
     };
 
     return (
-        <div className="flex justify-center bg-gray-100 p-3">
-            <Skeleton name="create-case-form" loading={loading}>
+        <Skeleton name="create-case-form" loading={loading}>
+            <div>
                 <div className="w-full max-w-3xl bg-white p-8 rounded-2xl shadow-lg">
                     <div className="text-center mb-8">
                         <h1 className="text-3xl font-bold">
@@ -170,11 +178,12 @@ const CreateCase = () => {
                             <button type="submit" className="w-full bg-black text-white py-3 rounded-xl font-semibold hover:bg-gray-800 transition">
                                 Create Case
                             </button>
+                            {message && <MessageModal message={message} type={messageType} onClose={() => setMessage("")} />}
                         </div>
                     </form>
                 </div>
-            </Skeleton>
-        </div>
+            </div>
+        </Skeleton>
     );
 };
 

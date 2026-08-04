@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import caseService from "../services/caseService";
 import { Skeleton } from "boneyard-js/react";
+import MessageModal from "../components/MessageModal";
 
 function ManageCases() {
     const [cases, setCases] = useState([])
     const [loading, setLoading] = useState(true);
+    const [message, setMessage] = useState("");
+    const [messageType, setMessageType] = useState("");
 
     const loadCases = async () => {
         try {
@@ -34,17 +37,21 @@ function ManageCases() {
                 hearingDate: item.hearingDate,
                 hearingTime: item.hearingTime
             });
-            alert("Case updated successfully");
+            // alert("Case updated successfully");
+            setMessage("Case updated successfully");
+            setMessageType("success");
         } catch (error) {
             console.error(error);
+            // alert("Failed to update case");
+            setMessage("Failed to update case");
+            setMessageType("error");
         }
     };
 
-
     return (
-        <div className="p-6">
-            <h1 className="text-3xl font-bold mb-6">Manage Cases</h1>
-            <Skeleton name="manage-cases-table" loading={loading}>
+        <Skeleton name="manage-cases-table" loading={loading}>
+            <div>
+                <h1 className="text-3xl font-bold mb-6">Manage Cases</h1>
                 <div className="bg-white rounded-xl shadow overflow-x-auto">
                     <table className="w-full">
                         <thead className="bg-black text-white">
@@ -76,13 +83,16 @@ function ManageCases() {
                                     <td className="p-4">
                                         <button onClick={() => handleUpdate(item)} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Update</button>
                                     </td>
+                                    {message && (
+                                        <MessageModal message={message} type={messageType} onClose={() => setMessage("")} />
+                                    )}
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                 </div>
-            </Skeleton>
-        </div>
+            </div>
+        </Skeleton>
     );
 }
 

@@ -15,10 +15,8 @@ const UpcomingHearingsPage = () => {
             try {
                 const { data } = await caseService.list();
                 const cases = data.data || [];
-                const hearings = cases
-                    .filter(item => user.role === "admin" || user.role === "lawyer"
-                            ? (item.lawyerId) === (user.id)
-                            : (item.clientId) === (user.id)
+                const hearings = cases.filter((item) => user.role === "admin" ?  true : user.role === "lawyer"
+                        ? (item.lawyerId) === (user.id) : (item.clientId) === (user.id)
                     )
                     .filter(item => item.hearingDate && new Date(item.hearingDate) >= new Date())
                     .sort((a, b) => new Date(a.hearingDate) - new Date(b.hearingDate));
@@ -35,10 +33,10 @@ const UpcomingHearingsPage = () => {
     }, [user?.id, user?.role]);
 
     return (
-        <div className="p-6">
-            <Skeleton name="assign-lawyer" loading={loading}>
+        <Skeleton name="assign-lawyer" loading={loading}>
+            <div>
                 <h1 className="text-3xl font-bold mb-6">Upcoming Hearings</h1>
-                {hearings.length < 0 ? (
+                {hearings.length === 0 ? (
                     <p className="text-gray-500">No upcoming hearings</p>
                 ) : (
                     <div className="space-y-4">
@@ -57,8 +55,8 @@ const UpcomingHearingsPage = () => {
                         ))}
                     </div>
                 )}
-            </Skeleton>
-        </div>
+            </div>
+        </Skeleton>
     );
 };
 

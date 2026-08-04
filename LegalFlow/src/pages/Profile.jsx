@@ -2,9 +2,12 @@ import { useEffect, useState } from "react";
 import userService from "../services/userService";
 import useAuth from "../hooks/useAuth";
 import { Skeleton } from "boneyard-js/react";
+import MessageModal from "../components/MessageModal";
 
 function Profile() {
     const { user } = useAuth();
+    const [message, setMessage] = useState("");
+    const [messageType, setMessageType] = useState("");
     const [profile, setProfile] = useState({
         fullName: "",
         phone: "",
@@ -53,7 +56,9 @@ function Profile() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (profile.password && profile.password !== profile.confirmPassword) {
-            alert("Passwords do not match");
+            // alert("Passwords do not match");
+            setMessage("Password do not match");
+            setMessageType("error");
             return;
         }
 
@@ -76,17 +81,21 @@ function Profile() {
 
         try {
             await userService.update(user.id, payload);
-            alert("Profile updated successfully");
+            // alert("Profile updated successfully");
             setProfile((prev) => ({
                 ...prev,
                 password: "",
                 confirmPassword: "",
             }));
+            setMessage("Profile updated successfully")
+            setMessageType("success");
             setTimeout(() => {
                 setLoading(false)
             }, 2000);
         } catch (error) {
             console.error(error);
+            setMessage("Failed to update profile");
+            setMessageType("error");
         } finally {
             setLoading(false);
         }
@@ -94,11 +103,11 @@ function Profile() {
 
     return (
         <Skeleton name="profile-page" loading={loading}>
-            <div className="max-w-3xl mx-auto p-6">
+            <div>
                 <h1 className="text-3xl font-bold mb-6">
                     My Profile
                 </h1>
-                <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow p-6 space-y-5">
+                <form onSubmit={handleSubmit} className="max-w-2xl bg-white rounded-xl shadow p-6 space-y-5">
                     <div>
                         <label className="block font-medium mb-1">
                             Full Name
@@ -110,7 +119,7 @@ function Profile() {
                         <label className="block font-medium mb-1">
                             Phone Number
                         </label>
-                        <input type="text" name="phone" value={profile.phone || ""} onChange={handleChange} className="w-full border rounded-lg p-3" />
+                        <input type="text" name="phone" value={profile.phone || ""} onChange={handleChange} className="w-full border rounded-lg p-3" maxLength={10} minLength={10} />
                     </div>
 
                     {user.role === "lawyer" && (
@@ -142,7 +151,7 @@ function Profile() {
                         <label className="font-medium mb-1">
                             New Password
                         </label>
-                        <input type="text" name="password" value={profile.password || ""} onChange={handleChange} className="w-full border rounded-lg p-3" />
+                        <input type="text" name="password" value={profile.password || ""} onChange={handleChange} className="w-full border rounded-lg p-3" minLength={6} maxLength={16} />
                     </div>
 
                     <div>
@@ -150,12 +159,18 @@ function Profile() {
                             Confirm Password
                         </label>
                         <input type="text" name="confirmPassword" value={profile.confirmPassword || ""} onChange={handleChange} className="w-full border rounded-lg p-3" />
+                        {profile.password && profile.password !== profile.confirmPassword && (
+                            <p className="text-red-500 text-sm mt-1">
+                                Passwords do not match
+                            </p>
+                        )}
                     </div>
 
                     <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg">
                         Save Changes
                     </button>
                 </form>
+                {message && (<MessageModal message={message} type={messageType} onClose={() => setMessage("")} />)}
             </div >
         </Skeleton>
     );

@@ -2,9 +2,12 @@ import { useEffect, useState } from "react";
 import userService from "../services/userService";
 import useAuth from "../hooks/useAuth";
 import { Skeleton } from "boneyard-js/react";
+import MessageModal from "../components/MessageModal";
 
 function Profile() {
     const { user } = useAuth();
+    const [message, setMessage] = useState("");
+    const [messageType, setMessageType] = useState("");
     const [profile, setProfile] = useState({
         fullName: "",
         phone: "",
@@ -53,7 +56,9 @@ function Profile() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (profile.password && profile.password !== profile.confirmPassword) {
-            alert("Passwords do not match");
+            // alert("Passwords do not match");
+            setMessage("Password do not match");
+            setMessageType("error");
             return;
         }
 
@@ -76,17 +81,21 @@ function Profile() {
 
         try {
             await userService.update(user.id, payload);
-            alert("Profile updated successfully");
+            // alert("Profile updated successfully");
             setProfile((prev) => ({
                 ...prev,
                 password: "",
                 confirmPassword: "",
             }));
+            setMessage("Profile updated successfully")
+            setMessageType("success");
             setTimeout(() => {
                 setLoading(false)
             }, 2000);
         } catch (error) {
             console.error(error);
+            setMessage("Failed to update profile");
+            setMessageType("error");
         } finally {
             setLoading(false);
         }
@@ -161,6 +170,7 @@ function Profile() {
                         Save Changes
                     </button>
                 </form>
+                {message && (<MessageModal message={message} type={messageType} onClose={() => setMessage("")} />)}
             </div >
         </Skeleton>
     );

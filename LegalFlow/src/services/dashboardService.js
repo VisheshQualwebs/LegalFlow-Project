@@ -49,7 +49,7 @@ const getDashboard = async (role = "client", userId) => {
             upcomingHearings: roleCases
                 .filter((item) => item.hearingDate && new Date(item.hearingDate) >= new Date())
                 .sort((a, b) => new Date(a.hearingDate) - new Date(b.hearingDate))
-                .slice(0, 5),
+                .slice(0, 3),
         };
 
         stats.upcomingHearingsCount = stats.upcomingHearings.length;

@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import userService from "../services/userService";
 import { Skeleton } from "boneyard-js/react";
+import MessageModal from "../components/MessageModal";
 
 function ManageLawyers() {
     const [lawyers, setLawyers] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [message, setMessage] = useState("");
+    const [messageType, setMessageType] = useState("");
     const loadLawyers = async () => {
         try {
             const response = await userService.list({ role: "lawyer" });
@@ -16,7 +19,6 @@ function ManageLawyers() {
         }
     };
 
-
     useEffect(() => {
         loadLawyers();
     }, []);
@@ -26,8 +28,12 @@ function ManageLawyers() {
             const response = await userService.update(id, { status });
             console.log(response);
             loadLawyers();
+            setMessage(`Lawyer status updated to ${status}`);
+            setMessageType("success");
         } catch (error) {
             console.error(error);
+            setMessage("Failed to update lawyer status");
+            setMessageType("error");
         }
     }
 
@@ -96,6 +102,7 @@ function ManageLawyers() {
                                 </tr>
                             )}
                         </tbody>
+                        {message && (<MessageModal message={message} type={messageType} onClose={() => setMessage("")} />)}
                     </table>
                 </div>
             </div >

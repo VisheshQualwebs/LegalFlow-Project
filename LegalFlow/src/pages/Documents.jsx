@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import documentService from "../services/documentService";
 import { Skeleton } from "boneyard-js/react";
+import MessageModal from "../components/MessageModal";
 
 function Documents() {
     const [documents, setDocuments] = useState([]);
@@ -9,6 +10,8 @@ function Documents() {
     const [loadingSummaryId, setLoadingSummaryId] = useState(false);
     const [selectedDocument, setSelectedDocument] = useState(null);
     const [showSummaryModal, setShowSummaryModal] = useState(false);
+    const [message, setMessage] = useState("");
+    const [messageType, setMessageType] = useState("");
 
     let user = null;
 
@@ -47,7 +50,9 @@ function Documents() {
             setShowSummaryModal(true);
         } catch (error) {
             console.error("Error summarizing document:", error);
-            alert("Failed to summarize document.")
+            // alert("Failed to summarize document.")
+            setMessage("Failed to summarize document.");
+            setMessageType("error");
         } finally {
             setLoadingSummaryId(false);
         }
@@ -124,6 +129,7 @@ function Documents() {
                             </div>
                         </div>
                     )}
+                    <MessageModal message={message} type={messageType} onClose={() => setMessage("")} />
                 </div>
             </div >
         </Skeleton>

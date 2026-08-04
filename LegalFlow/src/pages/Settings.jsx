@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { signup } from "../services/authService";
+import MessageModal from "../components/MessageModal";
 
 function Settings() {
+    const [message, setMessage] = useState("");
+    const [messageType, setMessageType] = useState("");
     const [form, setForm] = useState({
         fullName: "",
         email: "",
@@ -63,7 +66,9 @@ function Settings() {
 
         try {
             const response = await signup(form);
-            alert("Admin Added Successfully");
+            // alert("Admin Added Successfully");
+            setMessage(response.data.message || "Admin Added Successfully");
+            setMessageType("success");
             setForm({
                 fullName: "",
                 email: "",
@@ -74,7 +79,9 @@ function Settings() {
             });
         } catch (error) {
             console.error("Error adding admin:", error);
-            alert(error.response?.data?.message || "Failed to add admin. Please try again.");
+            // alert(error.response?.data?.message || "Failed to add admin. Please try again.");
+            setMessage(error.response?.data?.message || "Failed to add admin. Please try again.");
+            setMessageType("error");
         }
     }
 
@@ -100,6 +107,7 @@ function Settings() {
 
                     <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition">Add</button>
                 </form>
+                {message && (<MessageModal message={message} type={messageType} onClose={() => setMessage("")} />)}
             </div>
         </div>
     )

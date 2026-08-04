@@ -7,6 +7,8 @@ import { login } from "../../services/authService";
 const Login = () => {
     const navigate = useNavigate();
     const [errors, setErrors] = useState({});
+    const [message, setMessage] = useState("");
+    const [messageType, setMessageType] = useState("");
     const [formData, setFormData] = useState({
         email: "",
         password: "",
@@ -61,21 +63,26 @@ const Login = () => {
             localStorage.setItem("user", JSON.stringify(user));
             // console.log("Stored:", localStorage.getItem("user"));
 
-            alert(response.message);
-            setTimeout(() => {
-                navigate("/dashboard");
-            }, 100);
+            // alert(response.message);
+            setMessage(response.data.message || "Login Successfull");
+            setMessageType("success")
+            // setTimeout(() => {
+            //     navigate("/dashboard");
+            // }, 100);
 
         } catch (error) {
             // console.log("Login Error:", error);
             // console.log("Response:", error.response);
             // console.log("Message:", error.message);
-            alert(error.response?.data?.message || error.message);
+            // alert(error.response?.data?.message || error.message);
+            setMessage("Invalid Email and Password");
+            setMessageType("error")
         } finally {
             setFormData({
                 email: "",
                 password: "",
             })
+            // setMessage("");
         }
     };
 
@@ -141,6 +148,21 @@ const Login = () => {
                             <button type="submit" className="w-full bg-white text-black font-semibold py-4 rounded-lg hover:bg-gray-300">
                                 Login
                             </button>
+                            {message && (
+                                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+                                    <div className="w-[350px] rounded-xl bg-white p-6 text-center shadow-xl">
+                                        <h2 className={`mb-2 text-xl font-semibold ${messageType === "success" ? "text-green-600" : "text-red-400"}`}>
+                                            {messageType === "success" ? "Success" : "Login Failed"}
+                                        </h2>
+                                        <p className="mb-5 text-gray-600">{message}</p>
+                                        <button onClick={() => {
+                                            if (messageType === "success") {
+                                                navigate("/dashboard");
+                                            } setMessage("")
+                                        }} className="rounded-lg bg-black px-5 py-2 text-white">OK</button>
+                                    </div>
+                                </div>
+                            )}
                         </form>
 
                         <button className="w-full border border-gray-500 rounded-lg py-4 mt-6 flex items-center justify-center gap-3 hover:bg-gray-900" onClick={() => alert("Google Login is not enable")} >

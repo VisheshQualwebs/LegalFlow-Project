@@ -2,10 +2,13 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import caseService from "../services/caseService";
 import { Skeleton } from "boneyard-js/react";
+import MessageModal from "../components/MessageModal";
 
 const CreateCase = () => {
     const [errors, setErrors] = useState({});
     const navigate = useNavigate();
+    const [message, setMessage] = useState("");
+    const [messageType, setMessageType] = useState("");
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -58,7 +61,8 @@ const CreateCase = () => {
                     return;
                 }
                 if (!allowedTypes.includes(file.type)) {
-                    alert("Only Pdf files are allowed.")
+                    // alert("Only Pdf files are allowed.")
+                    setErrors({ file: 'Only PDF files are allowed.' });
                     e.target.value = "";
                     return;
                 }
@@ -98,10 +102,14 @@ const CreateCase = () => {
 
         try {
             await caseService.create(data);
-            alert("Case Registered Successfully");
+            // alert("Case Registered Successfully");
+            setMessage("Case Registered Successfully");
+            setMessageType("success");
             navigate("/my-cases");
         } catch (error) {
-            alert(error.message || "Unable to create case");
+            // alert(error.message || "Unable to create case");
+            setMessage(error.message || "Unable to create case");
+            setMessageType("error");
         }
     };
 
@@ -170,6 +178,7 @@ const CreateCase = () => {
                             <button type="submit" className="w-full bg-black text-white py-3 rounded-xl font-semibold hover:bg-gray-800 transition">
                                 Create Case
                             </button>
+                            {message && <MessageModal message={message} type={messageType} onClose={() => setMessage("")} />}
                         </div>
                     </form>
                 </div>

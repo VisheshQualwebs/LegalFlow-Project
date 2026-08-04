@@ -10,7 +10,6 @@ import UpcomingHearingsPage from "../pages/UpcomingHearingsPage";
 import Dashboard from "../pages/UserDashboard";
 import ViewCase from "../pages/ViewCase";
 
-
 export const routeConfig = {
 
     admin: [
@@ -21,7 +20,6 @@ export const routeConfig = {
         { path: "assign-lawyers", element: <AssignLawyers /> },
         { path: "profile", element: <Profile /> },
         { path: "upcoming-hearings", element: <UpcomingHearingsPage /> }
-
     ],
 
     lawyer: [
@@ -42,5 +40,4 @@ export const routeConfig = {
         { path: "profile", element: <Profile /> },
         { path: "upcoming-hearings", element: <UpcomingHearingsPage /> }
     ]
-
 };

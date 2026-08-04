@@ -1,7 +1,7 @@
 {
-    "breakpoints": [375, 768, 1280],
+    "breakpoints": [375,768,1280],
     "out": "./src/bones",
-    "wait": 1500,
+    "wait": 1000,
     "routes": [
         "/dashboard",
         "/manage-lawyers",

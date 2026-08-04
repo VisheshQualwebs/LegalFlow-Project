@@ -2,7 +2,6 @@ import { useState } from "react";
 import { signup } from "../services/authService";
 
 function Settings() {
-    const [loading, setLoading] = useState(true);
     const [form, setForm] = useState({
         fullName: "",
         email: "",

@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import caseService from "../services/caseService";
+import { Skeleton } from "boneyard-js/react";
 
 const CreateCase = () => {
     const [errors, setErrors] = useState({});

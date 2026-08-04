@@ -54,9 +54,9 @@ function Documents() {
     }
 
     return (
-        <div className="container py-4">
-            <h2 className="mb-6 text-3xl font-bold">{user.role === "client" ? "My Documents" : "Assigned Case Documents"}</h2>
-            <Skeleton name="documents-table" loading={loading}>
+        <Skeleton name="documents-table" loading={loading}>
+            <div>
+                <h2 className="mb-6 text-3xl font-bold">{user.role === "client" ? "My Documents" : "Assigned Case Documents"}</h2>
                 <div className="bg-white rounded-xl shadow overflow-x-auto">
                     <table className="w-full p-4">
                         <thead className="bg-black text-white">
@@ -125,8 +125,8 @@ function Documents() {
                         </div>
                     )}
                 </div>
-            </Skeleton>
-        </div >
+            </div >
+        </Skeleton>
     );
 };
 

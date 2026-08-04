@@ -15,7 +15,7 @@ const CreateCase = () => {
 
         return () => clearTimeout(timer);
     }, []);
-    
+
     const validateForm = () => {
         const newErrors = {};
         if (!formData.title.trim()) {
@@ -106,8 +106,8 @@ const CreateCase = () => {
     };
 
     return (
-        <div className="flex justify-center bg-gray-100 p-3">
-            <Skeleton name="create-case-form" loading={loading}>
+        <Skeleton name="create-case-form" loading={loading}>
+            <div>
                 <div className="w-full max-w-3xl bg-white p-8 rounded-2xl shadow-lg">
                     <div className="text-center mb-8">
                         <h1 className="text-3xl font-bold">
@@ -173,8 +173,8 @@ const CreateCase = () => {
                         </div>
                     </form>
                 </div>
-            </Skeleton>
-        </div>
+            </div>
+        </Skeleton>
     );
 };
 

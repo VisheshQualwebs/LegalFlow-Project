@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
-import caseService from "../services/caseService";
-import useAuth from "../hooks/useAuth";
 import { Skeleton } from "boneyard-js/react";
+import { useEffect, useState } from "react";
+import useAuth from "../hooks/useAuth";
+import caseService from "../services/caseService";
 
 function ViewCase() {
     const [cases, setCases] = useState([]);
@@ -56,8 +56,8 @@ function ViewCase() {
     };
 
     return (
-        <div className="max-w-7xl mx-auto p-8">
-            <Skeleton name="view-cases-page" loading={loading}>
+        <Skeleton name="view-cases-page" loading={loading}>
+            <div>
                 <div className="flex justify-between items-center mb-8">
                     <div>
                         <h1 className="text-4xl font-bold">Cases</h1>
@@ -144,8 +144,8 @@ function ViewCase() {
                         </tbody>
                     </table>
                 </div>
-            </Skeleton>
-        </div>
+            </div>
+        </Skeleton>
     );
 }
 

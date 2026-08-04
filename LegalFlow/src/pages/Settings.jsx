@@ -79,9 +79,9 @@ function Settings() {
     }
 
     return (
-        <div className="max-w-lg mx-auto pt-10 px-6">
+        <div>
             <div className="w-full max-w-lg">
-                <h1 className="text-3xl font-bold text-center mb-6">Add Admin</h1>
+                <h1 className="text-3xl font-bold mb-6">Add Admin</h1>
                 <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-lg p-6 space-y-5">
                     <input type="text" name="fullName" value={form.fullName} onChange={handleChange} placeholder="Enter Name" className="w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                     {error.fullName && (<p className="text-red-500 text-sm">{error.fullName} </p>)}

@@ -40,11 +40,10 @@ function ManageCases() {
         }
     };
 
-
     return (
-        <div className="p-6">
-            <h1 className="text-3xl font-bold mb-6">Manage Cases</h1>
-            <Skeleton name="manage-cases-table" loading={loading}>
+        <Skeleton name="manage-cases-table" loading={loading}>
+            <div>
+                <h1 className="text-3xl font-bold mb-6">Manage Cases</h1>
                 <div className="bg-white rounded-xl shadow overflow-x-auto">
                     <table className="w-full">
                         <thead className="bg-black text-white">
@@ -81,8 +80,8 @@ function ManageCases() {
                         </tbody>
                     </table>
                 </div>
-            </Skeleton>
-        </div>
+            </div>
+        </Skeleton>
     );
 }
 

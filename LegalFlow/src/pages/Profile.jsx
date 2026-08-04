@@ -94,11 +94,11 @@ function Profile() {
 
     return (
         <Skeleton name="profile-page" loading={loading}>
-            <div className="max-w-3xl mx-auto p-6">
+            <div>
                 <h1 className="text-3xl font-bold mb-6">
                     My Profile
                 </h1>
-                <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow p-6 space-y-5">
+                <form onSubmit={handleSubmit} className="max-w-2xl bg-white rounded-xl shadow p-6 space-y-5">
                     <div>
                         <label className="block font-medium mb-1">
                             Full Name
@@ -110,7 +110,7 @@ function Profile() {
                         <label className="block font-medium mb-1">
                             Phone Number
                         </label>
-                        <input type="text" name="phone" value={profile.phone || ""} onChange={handleChange} className="w-full border rounded-lg p-3" />
+                        <input type="text" name="phone" value={profile.phone || ""} onChange={handleChange} className="w-full border rounded-lg p-3" maxLength={10} minLength={10} />
                     </div>
 
                     {user.role === "lawyer" && (
@@ -142,7 +142,7 @@ function Profile() {
                         <label className="font-medium mb-1">
                             New Password
                         </label>
-                        <input type="text" name="password" value={profile.password || ""} onChange={handleChange} className="w-full border rounded-lg p-3" />
+                        <input type="text" name="password" value={profile.password || ""} onChange={handleChange} className="w-full border rounded-lg p-3" minLength={6} maxLength={16} />
                     </div>
 
                     <div>
@@ -150,6 +150,11 @@ function Profile() {
                             Confirm Password
                         </label>
                         <input type="text" name="confirmPassword" value={profile.confirmPassword || ""} onChange={handleChange} className="w-full border rounded-lg p-3" />
+                        {profile.password && profile.password !== profile.confirmPassword && (
+                            <p className="text-red-500 text-sm mt-1">
+                                Passwords do not match
+                            </p>
+                        )}
                     </div>
 
                     <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg">

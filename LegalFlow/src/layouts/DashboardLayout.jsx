@@ -7,10 +7,12 @@ const DashboardLayout = () => {
     return (
         <div className="flex min-h-screen bg-gray-100">
             <Sidebar />
-            <div className="flex-1 flex flex-col min-h-screen">
+            <div className="flex min-w-0 flex-1 flex-col">
                 <Navbar />
-                <main className="flex-1 p-6">
-                    <Outlet />
+                <main className="flex-1 px-12 py-10">
+                    <div className="mx-auto w-full max-w-[1280px]">
+                        <Outlet />
+                    </div>
                 </main>
                 <Footer />
             </div>

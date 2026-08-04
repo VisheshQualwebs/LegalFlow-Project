@@ -1,12 +1,12 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 
 import AuthLayout from "../layouts/AuthLayout";
 import DashboardLayout from "../layouts/DashboardLayout";
 import Login from "../pages/auth/Login";
 import Signup from "../pages/auth/Signup";
+import Home from "../pages/Home";
 import ProtectedRoutes from "./ProtectedRoutes";
 import { routeConfig } from "./routeConfig";
-import Home from "../pages/Home";
 
 function AppRoutes() {
     let user = null;

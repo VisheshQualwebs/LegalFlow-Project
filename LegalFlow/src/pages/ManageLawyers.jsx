@@ -32,11 +32,11 @@ function ManageLawyers() {
     }
 
     return (
-        <div className="max-w-7xl mx-auto p-8">
-            <h1 className="text-4xl font-bold mb-8">
-                Manage Lawyers
-            </h1>
-            <Skeleton name="manage-lawyer-page" loading={loading}>
+        <Skeleton name="manage-lawyer-page" loading={loading}>
+            <div>
+                <h1 className="text-4xl font-bold mb-8">
+                    Manage Lawyers
+                </h1>
                 <div className="bg-white rounded-xl shadow-lg overflow-hidden">
                     <table className="w-full">
                         <thead className="bg-black text-white text-center">
@@ -98,8 +98,8 @@ function ManageLawyers() {
                         </tbody>
                     </table>
                 </div>
-            </Skeleton>
-        </div>
+            </div >
+        </Skeleton>
     );
 };
 

@@ -82,17 +82,22 @@ function Profile() {
                 password: "",
                 confirmPassword: "",
             }));
+            setTimeout(() => {
+                setLoading(false)
+            }, 2000);
         } catch (error) {
             console.error(error);
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <div className="max-w-3xl mx-auto p-6">
-            <h1 className="text-3xl font-bold mb-6">
-                My Profile
-            </h1>
-            <Skeleton name="profile-page" loading={loading}>
+        <Skeleton name="profile-page" loading={loading}>
+            <div className="max-w-3xl mx-auto p-6">
+                <h1 className="text-3xl font-bold mb-6">
+                    My Profile
+                </h1>
                 <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow p-6 space-y-5">
                     <div>
                         <label className="block font-medium mb-1">
@@ -151,9 +156,11 @@ function Profile() {
                         Save Changes
                     </button>
                 </form>
-            </Skeleton>
-        </div>
+            </div >
+        </Skeleton>
     );
 }
 
 export default Profile;
+
+// color="#b8b8b8" darkColor="#2f2f2f" animate="shimmer" shimmerColor="#d0d0d0" darkShimmerColor="#4b4b4b"

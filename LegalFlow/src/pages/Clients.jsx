@@ -15,24 +15,19 @@ function Clients() {
 
     const clients = useMemo(() => {
         const map = new Map();
-
         cases.forEach(({ client, status }) => {
             if (!client) return;
-
             const data = map.get(client.id) || {
                 ...client,
                 totalCases: 0,
                 pendingCases: 0,
                 completedCases: 0
             };
-
             data.totalCases++;
             if (status === "pending") data.pendingCases++;
             if (status === "completed") data.completedCases++;
-
             map.set(client.id, data);
         });
-
         return [...map.values()];
     }, [cases]);
 

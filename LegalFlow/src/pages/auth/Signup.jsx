@@ -96,7 +96,7 @@ const Signup = () => {
             // alert(response.message);
             setMessage(response.data.message || "Accout Created Successfully");
             setMessageType("success");
-            navigate("/login");
+            // navigate("/login");
         } catch (error) {
             console.log(error);
             // alert(error.response?.data?.message || "Signup Failed");
@@ -190,7 +190,14 @@ const Signup = () => {
                                 Create Account
                             </button>
                             {message && (
-                                <MessageModal message={message} type={messageType} onClose={() => setMessage("")} />
+                                <MessageModal message={message} type={messageType}
+                                    onClose={() => {
+                                        setMessage("");
+                                        if (messageType === "success") {
+                                            navigate("/login");
+                                        }
+                                    }}
+                                />
                             )}
 
                             <p className="text-center text-gray-400 mt-6">

@@ -1,13 +1,47 @@
-import React, { useState } from 'react'
+import { useEffect } from "react";
 
 const MessageModal = ({ message, type = "success", onClose, onConfirm, confirmText = "Confirm", }) => {
-    if (!message) return null;
     const isConfirm = type === "confirm";
+    const isSuccess = type === "success";
+    const isError = type === "error"
+
+    useEffect(() => {
+        if (!message) return null;
+        const handleKeys = (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                if (isConfirm) {
+                    onConfirm?.();
+                } else {
+                    onClose?.();
+                }
+            }
+
+            if (e.key === "Escape") {
+                e.preventDefault();
+                onClose?.();
+            }
+        };
+        document.addEventListener("keydown", handleKeys);
+
+        return () => {
+            document.removeEventListener("keydown", handleKeys);
+        };
+    }, [onClose, onConfirm, isConfirm, message]);
+
+    if (!message) return null;
+
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
             <div className="w-[350px] rounded-xl bg-white p-6 text-center shadow-xl">
-                <h2 className={`mb-2 text-xl font-semibold ${type === "success" ? "text-green-600" : type === "confirm" ? "text-gray-800" : "text-red-500"}`}>
-                    {type === "success" ? "Success" : type === "confirm" ? "Confirm" : "Error"}
+                {/* {(isConfirm || isSuccess) && ( */}
+                <div className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full text-3xl font-bold 
+                    ${isSuccess ? "bg-green-100 text-green-600" : isError ? "bg-red-100 text-red-600" : "bg-gray-100 text-gray-600"}`}>
+                    {isSuccess ? "✓" : isError ? "✕" : "?"}
+                </div>
+                {/* )} */}
+                <h2 className={`mb-2 text-xl font-semibold ${isSuccess ? "text-green-600" : isConfirm ? "text-gray-800" : "text-red-500"}`}>
+                    {isSuccess ? "Success" : isConfirm ? "Confirm" : "Error"}
                 </h2>
                 <p className="mb-5 text-gray-600">{message}</p>
                 {isConfirm ? (

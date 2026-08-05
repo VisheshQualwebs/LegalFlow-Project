@@ -26,7 +26,7 @@ const read = async (currentUser, id, query) => {
     }
     const payload = { id };
     const options = {
-        attributes: ["id", "fullName", "email", "role", "status", "createdAt"]
+        attributes: ["id", "fullName", "email", "role", "status", "createdAt", "phone"]
     };
 
     const includMap = {

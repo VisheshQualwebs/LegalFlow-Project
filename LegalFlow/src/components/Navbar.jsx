@@ -5,7 +5,6 @@ import MessageModal from "./MessageModal";
 const Navbar = () => {
     const [message, setMessage] = useState("");
     const [messageType, setMessageType] = useState("");
-    const [logout, setLogout] = useState(false);
     let user = null;
     try {
         const storedUser = localStorage.getItem("user");
@@ -25,7 +24,6 @@ const Navbar = () => {
         // localStorage.removeItem("user");
         // localStorage.removeItem("token");
         // navigate("/");
-        setLogout(true);
         setMessage("Are you sure you want to logout?");
         setMessageType("confirm");
     }
@@ -34,6 +32,8 @@ const Navbar = () => {
         try {
             localStorage.removeItem("user");
             localStorage.removeItem("token");
+            setMessage("");
+            setMessageType("");
             navigate("/");
         } catch (error) {
             console.log(error);
@@ -71,7 +71,7 @@ const Navbar = () => {
             )}
             {message && (
                 <MessageModal message={message} type={messageType}
-                    onClose={() => { setMessage(""), setLogout(false) }}
+                    onClose={() => setMessage("")}
                     onConfirm={handleConfirmLogout} confirmText="Logout" />
             )}
         </div>

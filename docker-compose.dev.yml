@@ -20,6 +20,8 @@ services:
     container_name: legalflow-backend
     ports:
       - "3000:3000"
+    env_file:
+      - ./backend/.env
     environment:
       PORT: 3000
       DB_HOST: postgres

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import googleLogo from "../../assets/images/google.png";
 import leftImage from "../../assets/images/left-side.jpeg";
+import MessageModal from "../../components/MessageModal";
 import { login } from "../../services/authService";
 
 const Login = () => {
@@ -9,19 +10,16 @@ const Login = () => {
     const [errors, setErrors] = useState({});
     const [message, setMessage] = useState("");
     const [messageType, setMessageType] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
         email: "",
         password: "",
     });
 
-    const [showPassword, setShowPassword] = useState(false);
-
     const handleChange = (e) => {
-        const { name, value, } = e.target;
-
         setFormData((prev) => ({
             ...prev,
-            [name]: value,
+            [e.target.name]: e.target.value,
         }));
     };
 
@@ -149,19 +147,13 @@ const Login = () => {
                                 Login
                             </button>
                             {message && (
-                                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-                                    <div className="w-[350px] rounded-xl bg-white p-6 text-center shadow-xl">
-                                        <h2 className={`mb-2 text-xl font-semibold ${messageType === "success" ? "text-green-600" : "text-red-400"}`}>
-                                            {messageType === "success" ? "Success" : "Login Failed"}
-                                        </h2>
-                                        <p className="mb-5 text-gray-600">{message}</p>
-                                        <button onClick={() => {
-                                            if (messageType === "success") {
-                                                navigate("/dashboard");
-                                            } setMessage("")
-                                        }} className="rounded-lg bg-black px-5 py-2 text-white">OK</button>
-                                    </div>
-                                </div>
+                                <MessageModal message={message} type={messageType} confirmText="OK"
+                                    onClose={() => {
+                                        setMessage("")
+                                        if (messageType === "success") {
+                                            navigate("/dashboard");
+                                        }
+                                    }} />
                             )}
                         </form>
 
@@ -184,3 +176,18 @@ const Login = () => {
 };
 
 export default Login;
+
+
+// <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+//     <div className="w-[350px] rounded-xl bg-white p-6 text-center shadow-xl">
+//         <h2 className={`mb-2 text-xl font-semibold ${messageType === "success" ? "text-green-600" : "text-red-400"}`}>
+//             {messageType === "success" ? "Success" : "Login Failed"}
+//         </h2>
+//         <p className="mb-5 text-gray-600">{message}</p>
+//         <button onClick={() => {
+//             if (messageType === "success") {
+//                 navigate("/dashboard");
+//             } setMessage("")
+//         }} className="rounded-lg bg-black px-5 py-2 text-white">OK</button>
+//     </div>
+// </div>

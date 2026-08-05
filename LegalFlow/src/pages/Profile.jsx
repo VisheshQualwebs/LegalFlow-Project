@@ -31,6 +31,7 @@ function Profile() {
         console.log("loadProfile called");
         try {
             const response = await userService.read(user.id);
+            console.log(response.data.data);
             setProfile((prev) => ({
                 ...prev,
                 ...response.data.data,
@@ -52,6 +53,15 @@ function Profile() {
             [name]: value,
         }));
     };
+
+    const maskPhoneNumber = (phone) => {
+        if (!phone) return "";
+        const digits = String(phone).replace(/\D/g, "");
+        if (digits.length !== 10) {
+            return digits;
+        }
+        return `${digits.slice(0, 3)}****${digits.slice(7)}`;
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -119,7 +129,7 @@ function Profile() {
                         <label className="block font-medium mb-1">
                             Phone Number
                         </label>
-                        <input type="text" name="phone" value={profile.phone || ""} onChange={handleChange} className="w-full border rounded-lg p-3" maxLength={10} minLength={10} />
+                        <input type="text" name="phone" value={maskPhoneNumber(profile.phone)} onChange={handleChange} className="w-full border rounded-lg p-3" maxLength={10} minLength={10} />
                     </div>
 
                     {user.role === "lawyer" && (

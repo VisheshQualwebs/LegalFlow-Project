@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import caseService from "../services/caseService";
-import { Skeleton } from "boneyard-js/react";
 import MessageModal from "../components/MessageModal";
+import caseService from "../services/caseService";
 
 const CreateCase = () => {
     const [errors, setErrors] = useState({});
@@ -114,76 +113,74 @@ const CreateCase = () => {
     };
 
     return (
-        <Skeleton name="create-case-form" loading={loading}>
-            <div>
-                <div className="w-full max-w-3xl bg-white p-8 rounded-2xl shadow-lg">
-                    <div className="text-center mb-8">
-                        <h1 className="text-3xl font-bold">
-                            Register New Case
-                        </h1>
-                        <p className="text-gray-500 mt-2">
-                            Fill the case details.
+        <div>
+            <div className="w-full max-w-3xl bg-white p-8 rounded-2xl shadow-lg">
+                <div className="text-center mb-8">
+                    <h1 className="text-3xl font-bold">
+                        Register New Case
+                    </h1>
+                    <p className="text-gray-500 mt-2">
+                        Fill the case details.
+                    </p>
+                </div>
+
+                <form onSubmit={handleSubmit} className="space-y-5">
+                    <input type="text" name="title" placeholder="Case Title" value={formData.title}
+                        onChange={handleChange} className="w-full border p-3 rounded-2xl" />
+                    {errors.title && (
+                        <p className="text-red-500 text-sm mb-4">
+                            {errors.title}
+                        </p>
+                    )}
+
+                    <textarea name="description" placeholder="Description" value={formData.description}
+                        onChange={handleChange} className="w-full border p-3 rounded-2xl" />
+                    {errors.description && (
+                        <p className="text-red-500 text-sm mb-4">
+                            {errors.description}
+                        </p>
+                    )}
+
+                    <select name="caseType" value={formData.caseType} onChange={handleChange} className="w-full border p-3 rounded-2xl" >
+                        <option value="">Select Case Type</option>
+                        <option value="Civil">Civil</option>
+                        <option value="Criminal">Criminal</option>
+                        <option value="Family">Family</option>
+                        <option value="Property">Property</option>
+                        <option value="Corporate">Corporate</option>
+                    </select>
+
+                    {errors.caseType && (
+                        <p className="text-red-500 text-sm">
+                            {errors.caseType}
+                        </p>
+                    )}
+
+                    <div className="w-full border-2 border-dashed border-gray-300 rounded-2xl p-6 text-center">
+                        <label htmlFor="file" className="cursor-pointer font-medium">
+                            {formData.file ? `${formData.file.name}` : "Upload Supporting Document (PDF)"}
+                        </label>
+                        <p className="text-xs text-gray-500 mt-2">
+                            Upload FIR, Notice, Agreement, Evidence, or other supporting document.
                         </p>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="space-y-5">
-                        <input type="text" name="title" placeholder="Case Title" value={formData.title}
-                            onChange={handleChange} className="w-full border p-3 rounded-2xl" />
-                        {errors.title && (
-                            <p className="text-red-500 text-sm mb-4">
-                                {errors.title}
-                            </p>
-                        )}
+                    <input id="file" type="file" name="file" accept=".pdf" onChange={handleChange} className="hidden" />
+                    {errors.file && (
+                        <p className="text-red-500 text-sm">
+                            * {errors.file}
+                        </p>
+                    )}
 
-                        <textarea name="description" placeholder="Description" value={formData.description}
-                            onChange={handleChange} className="w-full border p-3 rounded-2xl" />
-                        {errors.description && (
-                            <p className="text-red-500 text-sm mb-4">
-                                {errors.description}
-                            </p>
-                        )}
-
-                        <select name="caseType" value={formData.caseType} onChange={handleChange} className="w-full border p-3 rounded-2xl" >
-                            <option value="">Select Case Type</option>
-                            <option value="Civil">Civil</option>
-                            <option value="Criminal">Criminal</option>
-                            <option value="Family">Family</option>
-                            <option value="Property">Property</option>
-                            <option value="Corporate">Corporate</option>
-                        </select>
-
-                        {errors.caseType && (
-                            <p className="text-red-500 text-sm">
-                                {errors.caseType}
-                            </p>
-                        )}
-
-                        <div className="w-full border-2 border-dashed border-gray-300 rounded-2xl p-6 text-center">
-                            <label htmlFor="file" className="cursor-pointer font-medium">
-                                {formData.file ? `${formData.file.name}` : "Upload Supporting Document (PDF)"}
-                            </label>
-                            <p className="text-xs text-gray-500 mt-2">
-                                Upload FIR, Notice, Agreement, Evidence, or other supporting document.
-                            </p>
-                        </div>
-
-                        <input id="file" type="file" name="file" accept=".pdf" onChange={handleChange} className="hidden" />
-                        {errors.file && (
-                            <p className="text-red-500 text-sm">
-                                * {errors.file}
-                            </p>
-                        )}
-
-                        <div className="flex justify-center">
-                            <button type="submit" className="w-full bg-black text-white py-3 rounded-xl font-semibold hover:bg-gray-800 transition">
-                                Create Case
-                            </button>
-                            {message && <MessageModal message={message} type={messageType} onClose={() => setMessage("")} />}
-                        </div>
-                    </form>
-                </div>
+                    <div className="flex justify-center">
+                        <button type="submit" className="w-full bg-black text-white py-3 rounded-xl font-semibold hover:bg-gray-800 transition">
+                            Create Case
+                        </button>
+                    </div>
+                </form>
+                {message && <MessageModal message={message} type={messageType} onClose={() => setMessage("")} />}
             </div>
-        </Skeleton>
+        </div>
     );
 };
 

@@ -1,8 +1,8 @@
-import { Skeleton } from "boneyard-js/react";
 import { useEffect, useState } from "react";
+import DataTables from "../components/DataTables";
+import MessageModal from "../components/MessageModal";
 import useAuth from "../hooks/useAuth";
 import caseService from "../services/caseService";
-import MessageModal from "../components/MessageModal";
 
 function ViewCase() {
     const [cases, setCases] = useState([]);
@@ -12,6 +12,14 @@ function ViewCase() {
     const [messageType, setMessageType] = useState("");
     const [deleteCaseId, setDeleteCaseId] = useState(null);
     const { user } = useAuth();
+
+    const columns = [
+        { label: "Case" }, { label: "Client" }, { label: "Lawyer" }, { label: "Status", className: "text-center" }
+    ]
+
+    if (user?.role === "admin" || user?.role === "client") {
+        columns.push({ label: "Action" });
+    }
 
     const fetchCases = async (selectedStatus = "all") => {
         try {
@@ -72,99 +80,66 @@ function ViewCase() {
     };
 
     return (
-        <Skeleton name="view-cases-page" loading={loading}>
-            <div>
-                <div className="flex justify-between items-center mb-8">
-                    <div>
-                        <h1 className="text-4xl font-bold">Cases</h1>
-                        <p className="text-gray-500 mt-1">View all legal cases.</p>
-                    </div>
-
-                    <select value={status} onChange={(e) => setStatus(e.target.value)}
-                        className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black" >
-                        <option value="all">All Cases</option>
-                        <option value="pending">Pending</option>
-                        <option value="assigned">Assigned</option>
-                        <option value="in_progress">In Progress</option>
-                        <option value="completed">Completed</option>
-                        <option value="closed">Closed</option>
-                    </select>
+        <div>
+            <div className="flex justify-between items-center mb-8">
+                <div>
+                    <h1 className="text-4xl font-bold">Cases</h1>
+                    <p className="text-gray-500 mt-1">View all legal cases.</p>
                 </div>
 
-                <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-                    <table className="w-full">
-                        <thead className="bg-black text-white">
-                            <tr>
-                                <th className="p-4 text-left">Case</th>
-                                <th className="p-4 text-left">Client</th>
-                                <th className="p-4 text-left">Lawyer</th>
-                                <th className="p-4 text-left">Status</th>
-                                {(user?.role === "admin" || user?.role === "client") && (
-                                    <th className="p-4 text-left">
-                                        Action
-                                    </th>
-                                )}
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            {loading ? (
-                                <tr>
-                                    <td colSpan="6" className="text-center py-10">Loading...</td>
-                                </tr>
-                            ) : cases.length === 0 ? (
-                                <tr>
-                                    <td colSpan="6" className="text-center py-10 text-gray-500">
-                                        No Cases Found
-                                    </td>
-                                </tr>
-                            ) : (
-                                cases.map((item) => (
-                                    <tr key={item.id} className="border-b hover:bg-gray-50 transition">
-                                        <td className="p-4">
-                                            <div className="font-semibold">
-                                                {item.title}
-                                            </div>
-                                            <div className="text-sm text-gray-500">
-                                                {item.caseType}
-                                            </div>
-                                        </td>
-
-                                        <td className="p-4">
-                                            {item.client?.fullName}
-                                        </td>
-
-                                        <td className="p-4">
-                                            {item.lawyer?.fullName || (
-                                                <span className="text-red-500">Not Assigned</span>
-                                            )}
-                                        </td>
-
-                                        <td className="p-4">
-                                            <span className={`px-3 py-1 rounded-full text-sm font-medium ${badgeColor(item.status)}`}>
-                                                {item.status.replaceAll("_", " ")}
-                                            </span>
-                                        </td>
-
-                                        {(user?.role === "admin" || user?.role === "client") && (
-                                            <td className="p-4">
-                                                <button onClick={() => handleDelete(item.id)}
-                                                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg">
-                                                    Delete
-                                                </button>
-                                            </td>
-                                        )}
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
-                    {message && (<MessageModal message={message} type={messageType}
-                         onClose={() =>{setMessage(""), setDeleteCaseId(null)}}
-                         onConfirm={handleConfirmDelete} confirmText="Delete" />)}
-                </div>
+                <select value={status} onChange={(e) => setStatus(e.target.value)}
+                    className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black" >
+                    <option value="all">All Cases</option>
+                    <option value="pending">Pending</option>
+                    <option value="assigned">Assigned</option>
+                    <option value="in_progress">In Progress</option>
+                    <option value="completed">Completed</option>
+                    <option value="closed">Closed</option>
+                </select>
             </div>
-        </Skeleton>
+            <DataTables name="view-cases-page" loading={loading} columns={columns} isEmpty={cases.length === 0} emptyMessage="No Case Found!!">
+                {cases.map(item => (
+                    <tr key={item.id} className="border-b hover:bg-gray-50 transition">
+                        <td className="p-4">
+                            <div className="font-semibold">
+                                {item.title}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                                {item.caseType}
+                            </div>
+                        </td>
+
+                        <td className="p-4">
+                            {item.client?.fullName}
+                        </td>
+
+                        <td className="p-4">
+                            {item.lawyer?.fullName || (
+                                <span className="text-red-500">Not Assigned</span>
+                            )}
+                        </td>
+
+                        <td className="p-4 text-center">
+                            <span className={`px-3 py-1 rounded-full text-sm font-medium ${badgeColor(item.status)}`}>
+                                {item.status.replaceAll("_", " ")}
+                            </span>
+                        </td>
+
+                        {(user?.role === "admin" || user?.role === "client") && (
+                            <td className="p-4">
+                                <button onClick={() => handleDelete(item.id)}
+                                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg">
+                                    Delete
+                                </button>
+                            </td>
+                        )}
+                    </tr>
+                ))}
+            </DataTables>
+            {message && (<MessageModal message={message} type={messageType}
+                onClose={() => { setMessage(""), setDeleteCaseId(null) }}
+                onConfirm={handleConfirmDelete} confirmText="Delete" />)}
+        </div>
     );
 }
 

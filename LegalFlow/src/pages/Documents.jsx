@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import documentService from "../services/documentService";
-import { Skeleton } from "boneyard-js/react";
+import DataTables from "../components/DataTables";
 import MessageModal from "../components/MessageModal";
+import documentService from "../services/documentService";
 
 function Documents() {
     const [documents, setDocuments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [summary, setSummary] = useState("");
-    const [loadingSummaryId, setLoadingSummaryId] = useState(false);
+    const [loadingSummaryId, setLoadingSummaryId] = useState(null);
     const [selectedDocument, setSelectedDocument] = useState(null);
     const [showSummaryModal, setShowSummaryModal] = useState(false);
     const [message, setMessage] = useState("");
@@ -24,6 +24,16 @@ function Documents() {
         console.error("Invalid user in localStorage:", err);
         localStorage.removeItem("user");
     }
+
+    const column = [
+        { label: "Case" },
+        ...(user?.role === "lawyer" ? [{ label: "Client" }] : []),
+        { label: "File Name" },
+        { label: "Date" },
+        { label: "View" },
+        { label: "Download" },
+        { label: "Summarize" },
+    ]
 
     useEffect(() => {
         loadDocuments();
@@ -59,80 +69,54 @@ function Documents() {
     }
 
     return (
-        <Skeleton name="documents-table" loading={loading}>
-            <div>
-                <h2 className="mb-6 text-3xl font-bold">{user.role === "client" ? "My Documents" : "Assigned Case Documents"}</h2>
-                <div className="bg-white rounded-xl shadow overflow-x-auto">
-                    <table className="w-full p-4">
-                        <thead className="bg-black text-white">
-                            <tr>
-                                <th>Case</th>
-                                {user.role === "lawyer" && (
-                                    <th>Client</th>
-                                )}
-                                <th className="p-2">File Name</th>
-                                <th className="p-2">Date</th>
-                                <th className="p-2">View</th>
-                                <th className="p-2">Download</th>
-                                <th className="p-2">Summarize</th>
-                            </tr>
-                        </thead>
-                        <tbody className="text-center">
-                            {documents.length === 0 ? (<tr>
-                                <td colSpan={user.role === "lawyer" ? 6 : 5} className="text-center p-4 text-muted">
-                                    No Documents Found
-                                </td>
-                            </tr>
-                            ) : (
-                                documents.map((doc) => (
-                                    <tr key={doc.id}>
-                                        <td className="p-4">{doc.case?.title}</td>
-                                        {user.role === "lawyer" && (
-                                            <td>{doc.case?.client?.fullName}</td>
-                                        )}
-                                        <td className="p-4">{doc.originalName}</td>
-                                        <td className="p-4">{new Date(doc.createdAt).toLocaleString()}</td>
-                                        <td className="p-4"><button className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-                                            onClick={() => documentService.viewDocument(doc.id)}>
-                                            View
-                                        </button></td>
-                                        <td className="p-4"><button className="bg-green-600 text-white px-4 py-2 hover:bg-green-700"
-                                            onClick={() => documentService.downloadDocument(doc.id)}>
-                                            Download
-                                        </button></td>
-                                        <td className="p-4"><button className={`text-white px-4 py-2 rounded ${loadingSummaryId === doc.id ? "bg-gray-500 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"}`}
-                                            disabled={loadingSummaryId === doc.id} onClick={() => handleSummarize(doc.id)}>
-                                            {loadingSummaryId === doc.id ? "Summarizing..." : "Summarize"}
-                                        </button></td>
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
-                    {showSummaryModal && (
-                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                            <div className="bg-white rounded-lg p-6 w-[700px] max-h-[80vh] overflow-y-auto shadow-xl">
-                                <div className="flex justify-between items-center mb-4">
-                                    <h2 className="text-xl font-bold">AI Document Summary</h2>
-                                    <div className="flex gap-5">
-                                        <button onClick={() => handleSummarize(selectedDocument)}
-                                            className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700"
-                                            disabled={loadingSummaryId === selectedDocument}>
-                                            {loadingSummaryId === selectedDocument ? "Regenerating..." : "Regenerate"}
-                                        </button>
-                                        <button onClick={() => setShowSummaryModal(false)} className="text-red-600 font-bold text-xl">✕</button>
-                                    </div>
-                                </div>
-                                <div className="whitespace-pre-wrap">
-                                    {summary}
-                                </div>
+        <div>
+            <h2 className="mb-6 text-3xl font-bold">{user.role === "client" ? "My Documents" : "Assigned Case Documents"}</h2>
+            <DataTables name="documents-table" loading={loading} columns={column} isEmpty={documents.length === 0} emptyMessage="Documents Not Found!!">
+                {documents.map(item => {
+                    return (<tr key={item.id}>
+                        <td className="p-4">{item.case.title}</td>
+                        {user.role === "lawyer" && (
+                            <td className="p-4">{item.case.client.fullName}</td>
+                        )}
+                        <td className="p-4">{item.originalName}</td>
+                        <td className="p-4">{new Date(item.createdAt).toLocaleString()}</td>
+                        <td className="p-4"><button className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                            onClick={() => documentService.viewDocument(item.id)}>
+                            View
+                        </button></td>
+                        <td className="p-4"><button className="bg-green-600 text-white px-4 py-2 hover:bg-green-700"
+                            onClick={() => documentService.downloadDocument(item.id)}>
+                            Download
+                        </button></td>
+                        <td className="p-4"><button className={`text-white px-4 py-2 rounded ${loadingSummaryId === item.id ? "bg-gray-500 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"}`}
+                            disabled={loadingSummaryId === item.id} onClick={() => handleSummarize(item.id)}>
+                            {loadingSummaryId === item.id ? "Summarizing..." : "Summarize"}
+                        </button></td>
+                    </tr>)
+                })}
+            </DataTables>
+            {showSummaryModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-6 w-[700px] max-h-[80vh] overflow-y-auto shadow-xl">
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-xl font-bold">AI Document Summary</h2>
+                            <div className="flex gap-5">
+                                <button onClick={() => handleSummarize(selectedDocument)}
+                                    className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700"
+                                    disabled={loadingSummaryId === selectedDocument}>
+                                    {loadingSummaryId === selectedDocument ? "Regenerating..." : "Regenerate"}
+                                </button>
+                                <button onClick={() => setShowSummaryModal(false)} className="text-red-600 font-bold text-xl">✕</button>
                             </div>
                         </div>
-                    )}
-                    <MessageModal message={message} type={messageType} onClose={() => setMessage("")} />
+                        <div className="whitespace-pre-wrap">
+                            {summary}
+                        </div>
+                    </div>
                 </div>
-            </div >
-        </Skeleton>
+            )}
+            <MessageModal message={message} type={messageType} onClose={() => setMessage("")} />
+        </div>
     );
 };
 

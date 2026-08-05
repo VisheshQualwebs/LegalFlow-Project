@@ -6,7 +6,7 @@ const MessageModal = ({ message, type = "success", onClose, onConfirm, confirmTe
     const isError = type === "error"
 
     useEffect(() => {
-        if (!message) return null;
+        if (!message) return;
         const handleKeys = (e) => {
             if (e.key === "Enter") {
                 e.preventDefault();

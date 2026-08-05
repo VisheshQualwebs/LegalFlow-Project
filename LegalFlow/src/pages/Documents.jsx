@@ -64,7 +64,7 @@ function Documents() {
             setMessage("Failed to summarize document.");
             setMessageType("error");
         } finally {
-            setLoadingSummaryId(false);
+            setLoadingSummaryId(null);
         }
     }
 

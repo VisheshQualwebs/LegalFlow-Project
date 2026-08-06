@@ -7,19 +7,10 @@ import Signup from "../pages/auth/Signup";
 import Home from "../pages/Home";
 import ProtectedRoutes from "./ProtectedRoutes";
 import { routeConfig } from "./routeConfig";
+import { useSelector } from "react-redux";
 
 function AppRoutes() {
-    let user = null;
-
-    try {
-        const storedUser = localStorage.getItem("user");
-        if (storedUser && storedUser !== "undefined") {
-            user = JSON.parse(storedUser);
-        }
-    } catch (err) {
-        console.error("Invalid user in localStorage:", err);
-        localStorage.removeItem("user");
-    }
+    const user = useSelector((state) => state.auth.user);
     return (
         <Routes>
             {/* <Route path="/" element={<Navigate to="/login" replace />} /> */}

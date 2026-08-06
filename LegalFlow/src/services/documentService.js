@@ -15,7 +15,6 @@ const uploadDocument = async (formData) => {
 }
 
 const downloadDocument = async (id) => {
-    const token = localStorage.getItem("token");
     const response = await api.get(`/documents/${id}/download`, {
         responseType: "blob",
         headers: {
@@ -34,7 +33,6 @@ const downloadDocument = async (id) => {
 }
 
 const viewDocument = async (id) => {
-    const token = localStorage.getItem("token");
     const response = await api.get(`/documents/${id}/view`, {
         responseType: "blob",
         headers: {

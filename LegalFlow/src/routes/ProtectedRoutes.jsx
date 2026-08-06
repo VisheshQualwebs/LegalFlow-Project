@@ -1,22 +1,11 @@
 import { Navigate } from "react-router-dom";
+import useAuth from "../hooks/useAuth";
 
 function ProtectedRoutes({ children }) {
-    let user = null;
-
-    try {
-        const storedUser = localStorage.getItem("user");
-        if (storedUser && storedUser !== "undefined") {
-            user = JSON.parse(storedUser);
-        }
-    } catch (err) {
-        console.error("Invalid user in localStorage:", err);
-        localStorage.removeItem("user");
-    }
-
-    if (!user) {
+    const { user, isAuthenticated } = useAuth();
+    if (!user && !isAuthenticated) {
         return <Navigate to="/login" replace />;
     }
-
     return children;
 }
 

@@ -1,12 +1,15 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import googleLogo from "../../assets/images/google.png";
 import leftImage from "../../assets/images/left-side.jpeg";
 import MessageModal from "../../components/MessageModal";
+import { loginSuccess } from "../../redux/authSlice";
 import { login } from "../../services/authService";
 
 const Login = () => {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const [errors, setErrors] = useState({});
     const [message, setMessage] = useState("");
     const [messageType, setMessageType] = useState("");
@@ -49,30 +52,12 @@ const Login = () => {
                 email: formData.email,
                 password: formData.password,
             };
-
             const response = await login(data);
-            // console.log("Response:", response);
-
             const { user, token } = response.data;
-            // console.log("User:", user);
-            // console.log("Token:", token);
-
-            localStorage.setItem("token", token);
-            localStorage.setItem("user", JSON.stringify(user));
-            // console.log("Stored:", localStorage.getItem("user"));
-
-            // alert(response.message);
+            dispatch(loginSuccess({ user, token }));
             setMessage(response.data.message || "Login Successfull");
             setMessageType("success")
-            // setTimeout(() => {
-            //     navigate("/dashboard");
-            // }, 100);
-
         } catch (error) {
-            // console.log("Login Error:", error);
-            // console.log("Response:", error.response);
-            // console.log("Message:", error.message);
-            // alert(error.response?.data?.message || error.message);
             setMessage("Invalid Email and Password");
             setMessageType("error")
         } finally {
@@ -80,7 +65,6 @@ const Login = () => {
                 email: "",
                 password: "",
             })
-            // setMessage("");
         }
     };
 

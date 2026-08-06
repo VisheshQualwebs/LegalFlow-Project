@@ -4,7 +4,6 @@ const Footer = () => {
       <b className="text-white">
         LegalFlow.
       </b>
-      
       <span>
         © {new Date().getFullYear()} LegalFlow
       </span>

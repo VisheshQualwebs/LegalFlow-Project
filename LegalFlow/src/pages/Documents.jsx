@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import DataTables from "../components/DataTables";
 import MessageModal from "../components/MessageModal";
 import documentService from "../services/documentService";
+import { useSelector } from "react-redux";
 
 function Documents() {
     const [documents, setDocuments] = useState([]);
@@ -13,17 +14,7 @@ function Documents() {
     const [message, setMessage] = useState("");
     const [messageType, setMessageType] = useState("");
 
-    let user = null;
-
-    try {
-        const storedUser = localStorage.getItem("user");
-        if (storedUser && storedUser !== "undefined") {
-            user = JSON.parse(storedUser);
-        }
-    } catch (err) {
-        console.error("Invalid user in localStorage:", err);
-        localStorage.removeItem("user");
-    }
+    const user = useSelector((state) => state.auth.user);
 
     const column = [
         { label: "Case" },

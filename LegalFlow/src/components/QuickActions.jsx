@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 const QuickActions = ({ actions }) => {
     return (
         <div className="bg-white rounded-xl shadow p-6">
-
             <h2 className="text-xl font-semibold mb-6">
                 Quick Actions
             </h2>
@@ -14,7 +13,6 @@ const QuickActions = ({ actions }) => {
                         <p className="font-semibold">
                             {action.title}
                         </p>
-
                         <p className="text-sm text-gray-500 mt-1">
                             {action.description}
                         </p>

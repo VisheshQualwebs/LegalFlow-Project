@@ -91,14 +91,11 @@ const CreateCase = () => {
             return;
         }
         setErrors({});
-
         const data = new FormData();
-
         data.append("title", formData.title);
         data.append("description", formData.description);
         data.append("caseType", formData.caseType);
         data.append("file", formData.file);
-
         try {
             await caseService.create(data);
             // alert("Case Registered Successfully");

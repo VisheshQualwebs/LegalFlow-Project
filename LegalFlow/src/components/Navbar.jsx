@@ -1,37 +1,24 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import MessageModal from "./MessageModal";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../redux/authSlice";
 
 const Navbar = () => {
     const [message, setMessage] = useState("");
     const [messageType, setMessageType] = useState("");
-    let user = null;
-    try {
-        const storedUser = localStorage.getItem("user");
-        if (storedUser && storedUser !== "undefined") {
-            user = JSON.parse(storedUser);
-        }
-    } catch (err) {
-        console.error("Invalid user in localStorage:", err);
-        localStorage.removeItem("user");
-    }
-
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const user = useSelector((state) => state.auth.user);
 
     const handleLogout = () => {
-        // const confirmLogout = window.confirm("Are you sure you want to logout?");
-        // if (!confirmLogout) return;
-        // localStorage.removeItem("user");
-        // localStorage.removeItem("token");
-        // navigate("/");
         setMessage("Are you sure you want to logout?");
         setMessageType("confirm");
     }
 
     const handleConfirmLogout = () => {
         try {
-            localStorage.removeItem("user");
-            localStorage.removeItem("token");
+            dispatch(logout());
             setMessage("");
             setMessageType("");
             navigate("/");

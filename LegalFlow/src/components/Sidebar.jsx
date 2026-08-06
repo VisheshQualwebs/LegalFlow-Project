@@ -1,18 +1,8 @@
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 const Sidebar = () => {
-    let user = null;
-
-    try {
-        const storedUser = localStorage.getItem("user");
-        if (storedUser && storedUser !== "undefined") {
-            user = JSON.parse(storedUser);
-        }
-    } catch (err) {
-        console.error("Invalid user in localStorage:", err);
-        localStorage.removeItem("user");
-    }
-
+    const user = useSelector((state) => state.auth.user);
     if (!user) return null;
 
     const menus = [
@@ -80,11 +70,10 @@ const Sidebar = () => {
 
     return (
         <div className="w-64 bg-black text-white p-6 min-h-screen">
-            <h2 className="text-3xl font-bold mb-10">
-                LegalFlow
-            </h2>
-
-            <nav className="space-y-5">
+            <div className="mb-10">
+                <Link to="/dashboard" className="text-3xl font-bold">LegalFlow</Link>
+            </div>
+            <nav className="space-y-7">
                 {menus.filter((menu) => menu.visible_roles.includes(user.role)).map((menu) => (
                     <Link key={menu.title} to={menu.url} className="block hover:text-gray-400">
                         {menu.title}

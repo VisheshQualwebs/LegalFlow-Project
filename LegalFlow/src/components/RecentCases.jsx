@@ -1,6 +1,7 @@
+import { memo } from "react";
 import { Link } from "react-router-dom";
 
-const RecentCases = ({ cases = [], viewUrl }) => {
+const RecentCases = memo(({ cases = [], viewUrl }) => {
     return (
         <div className="bg-white rounded-xl shadow p-6">
             <div className="flex justify-between mb-6">
@@ -52,6 +53,6 @@ const RecentCases = ({ cases = [], viewUrl }) => {
             )}
         </div>
     );
-};
+});
 
 export default RecentCases;

@@ -1,61 +1,69 @@
-import { useEffect, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import DataTables from "../components/DataTables";
 import MessageModal from "../components/MessageModal";
 import caseService from "../services/caseService";
 import userService from "../services/userService";
 
+const COLUMN = [
+    { label: "Case" },
+    { label: "Client" },
+    { label: "Lawyer" },
+    { label: "Status" }
+]
+
 const AssignLawyers = () => {
-    const [loading, setLoading] = useState(true);
-    const [cases, setCases] = useState([]);
-    const [lawyers, setLawyers] = useState([]);
     const [message, setMessage] = useState("");
     const [messageType, setMessageType] = useState("");
+    const queryClient = useQueryClient();
 
-    const column = [
-        { label: "Case" },
-        { label: "Client" },
-        { label: "Lawyer" },
-        { label: "Status" }
-    ]
+    const { data: cases = [], isLoading: casesLoading } = useQuery({
+        queryKey: ["unassigned-cases"],
+        queryFn: async () => {
+            const resp = await caseService.list();
+            return (resp.data.data || []).filter(item => !item.lawyerId);
+        },
+    });
 
-    useEffect(() => {
-        loadData();
-    }, []);
+    const { data: lawyers = [], isLoading: lawyersLoading } = useQuery({
+        queryKey: ["approved-lawyers"],
+        queryFn: async () => {
+            const resp = await userService.list();
+            return (resp.data.data || []).filter(user => user.role === "lawyer" && user.status === "approved");
+        },
+    });
 
-    const loadData = async () => {
-        try {
-            const caseResponse = await caseService.list();
-            const userResponse = await userService.list();
-            setCases(caseResponse.data.data.filter(item => !item.lawyerId));
-            setLawyers(userResponse.data.data.filter(user => user.role === "lawyer" && user.status === "approved"));
-        } catch (error) {
-            console.error(error);
-            throw error;
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleAssign = async (caseId, lawyerId) => {
-        if (!lawyerId) return;
-        try {
-            await caseService.update(caseId, { lawyerId });
-            loadData();
-            setMessage("Lawyer assigned successfully");
+    const assignMutation = useMutation({
+        mutationFn: ({ caseId, lawyerId }) => caseService.update(caseId, { lawyerId }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["unassigned-cases"],
+            })
+            queryClient.invalidateQueries({
+                queryKey: ["cases"],
+            })
+            setMessage("Lawyer Assigned Successfully");
             setMessageType("success");
-        } catch (error) {
-            console.error(error);
+        },
+        onError: () => {
             setMessage("Failed to assign lawyer");
             setMessageType("error");
         }
+    })
+
+    const handleAssign = async (caseId, lawyerId) => {
+        if (!lawyerId) return;
+        assignMutation.mutate({ caseId, lawyerId });
     };
+
+    const loading = lawyersLoading || casesLoading;
 
     return (
         <div>
             <h1 className="text-3xl font-bold mb-6">
                 Assign Lawyers
             </h1>
-            <DataTables name="assign-lawyer" loading={loading} columns={column} isEmpty={cases.length === 0} emptyMessage="No Cases Found to Assign to Lawyers">
+            <DataTables name="assign-lawyer" loading={loading} columns={COLUMN} isEmpty={cases.length === 0} emptyMessage="No Cases Found to Assign to Lawyers">
                 {cases.map(item => (
                     <tr key={item.id}>
                         <td className="p-4">{item.title}</td>

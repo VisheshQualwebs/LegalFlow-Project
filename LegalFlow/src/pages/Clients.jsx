@@ -1,25 +1,24 @@
-import { useEffect, useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 import DataTables from "../components/DataTables";
 import caseService from "../services/caseService";
 
+const COLUMN = [
+    { label: "Client" },
+    { label: "Email" },
+    { label: "Cases", className: "text-center" },
+    { label: "Pending", className: "text-center" },
+    { label: "Completed", className: "text-center" },
+]
+
 function Clients() {
-    const [cases, setCases] = useState([]);
-    const [loading, setLoading] = useState(true);
-
-    const columns = [
-        { label: "Client" },
-        { label: "Email" },
-        { label: "Cases", className:"text-center" },
-        { label: "Pending", className:"text-center" },
-        { label: "Completed", className:"text-center" },
-    ]
-
-    useEffect(() => {
-        caseService.list()
-            .then(res => setCases(res.data.data))
-            .catch(console.error)
-            .finally(() => setLoading(false));
-    }, []);
+    const { data: cases = [], isLoading: loading, isError, error } = useQuery({
+        queryKey: ["cases", { view: "clients" }],
+        queryFn: async () => {
+            const resp = await caseService.list();
+            return resp.data.data;
+        }
+    })
 
     const clients = useMemo(() => {
         const map = new Map();
@@ -39,6 +38,14 @@ function Clients() {
         return [...map.values()];
     }, [cases]);
 
+    if (isError) {
+        return (
+            <div className="text-center py-10 text-gray-500">
+                {error?.message || "Failed to load clients"}
+            </div>
+        )
+    }
+
     return (
         <div>
             <div className="mb-8">
@@ -47,7 +54,7 @@ function Clients() {
                     Clients assigned to your legal cases.
                 </p>
             </div>
-            <DataTables name="clients-table" loading={loading} columns={columns} isEmpty={clients.length === 0} emptyMessage="No Clients Found">
+            <DataTables name="clients-table" loading={loading} columns={COLUMN} isEmpty={clients.length === 0} emptyMessage="No Clients Found">
                 {clients.map(item => (
                     <tr key={item.id} className="border-b hover:bg-gray-50">
                         <td className="p-4 font-semibold">
@@ -75,51 +82,3 @@ function Clients() {
 }
 
 export default Clients;
-
-{/* <Skeleton name="clients-table" loading={loading}>
-    <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-        <table className="w-full">
-            <thead className="bg-black text-white">
-                <tr>
-                    <th className="p-4 text-left">Client</th>
-                    <th className="p-4 text-left">Email</th>
-                    <th className="p-4 text-center">Cases</th>
-                    <th className="p-4 text-center">Pending</th>
-                    <th className="p-4 text-center">Completed</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                {clients.length === 0 ? (
-                    <tr>
-                        <td colSpan="5" className="text-center py-10 text-gray-500">
-                            No Clients Found
-                        </td>
-                    </tr>
-                ) : (
-                    clients.map(client => (
-                        <tr key={client.id} className="border-b hover:bg-gray-50">
-                            <td className="p-4 font-semibold">
-                                {client.fullName}
-                            </td>
-                            <td className="p-4">{client.email}</td>
-                            <td className="p-4 text-center font-semibold">
-                                {client.totalCases}
-                            </td>
-                            <td className="p-4 text-center">
-                                <span className="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full">
-                                    {client.pendingCases}
-                                </span>
-                            </td>
-                            <td className="p-4 text-center">
-                                <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full">
-                                    {client.completedCases}
-                                </span>
-                            </td>
-                        </tr>
-                    ))
-                )}
-            </tbody>
-        </table>
-    </div>
-</Skeleton> */}

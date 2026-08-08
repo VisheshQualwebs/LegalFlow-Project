@@ -1,4 +1,6 @@
-const DashboardCard = ({ title, value }) => {
+import { memo } from "react";
+
+const DashboardCard = memo(({ title, value }) => {
     return (
         <div className="bg-white rounded-xl shadow p-6">
             <h3 className="text-gray-500">
@@ -9,6 +11,6 @@ const DashboardCard = ({ title, value }) => {
             </h2>
         </div>
     );
-};
+});
 
 export default DashboardCard;

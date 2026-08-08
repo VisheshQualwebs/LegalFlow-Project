@@ -1,13 +1,15 @@
-import { useEffect, useState } from "react";
-import userService from "../services/userService";
-import useAuth from "../hooks/useAuth";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Skeleton } from "boneyard-js/react";
+import { useEffect, useState } from "react";
 import MessageModal from "../components/MessageModal";
+import useAuth from "../hooks/useAuth";
+import userService from "../services/userService";
 
 function Profile() {
     const { user } = useAuth();
     const [message, setMessage] = useState("");
     const [messageType, setMessageType] = useState("");
+    const queryClient = useQueryClient();
     const [profile, setProfile] = useState({
         fullName: "",
         phone: "",
@@ -18,32 +20,46 @@ function Profile() {
         confirmPassword: "",
     });
 
-    const [loading, setLoading] = useState(true);
+    const { data: profileData, isLoading: loading, isError, error } = useQuery({
+        queryKey: ["user-profile", user?.id],
+        queryFn: async () => {
+            const response = await userService.read(user.id);
+            return response.data.data;
+        },
+        enabled: !!user?.id,
+    });
 
     useEffect(() => {
-        console.log("Effect")
-        if (user?.id) {
-            loadProfile();
-        }
-    }, [user?.id]);
+        if (!profileData) return;
+        setProfile((prev) => ({
+            ...prev,
+            ...profileData,
+            password: "",
+            confirmPassword: "",
+        }))
+    }, [profileData]);
 
-    const loadProfile = async () => {
-        console.log("loadProfile called");
-        try {
-            const response = await userService.read(user.id);
-            console.log(response.data.data);
+    const updateProfileMutation = useMutation({
+        mutationFn: (payload) => {
+            return userService.update(user.id, payload);
+        },
+        onSuccess: () => {
             setProfile((prev) => ({
                 ...prev,
-                ...response.data.data,
                 password: "",
                 confirmPassword: "",
             }));
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setLoading(false);
+            setMessage("Profile Updated Successfully!");
+            setMessageType("success");
+            queryClient.invalidateQueries({
+                queryKey: ["user-profile", user?.id],
+            });
+        },
+        onError: () => {
+            setMessage("Failed to update profile");
+            setMessageType("error");
         }
-    };
+    })
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -88,31 +104,19 @@ function Profile() {
         if (profile.password) {
             payload.password = profile.password;
         }
-
-        try {
-            await userService.update(user.id, payload);
-            // alert("Profile updated successfully");
-            setProfile((prev) => ({
-                ...prev,
-                password: "",
-                confirmPassword: "",
-            }));
-            setMessage("Profile updated successfully")
-            setMessageType("success");
-            setTimeout(() => {
-                setLoading(false)
-            }, 2000);
-        } catch (error) {
-            console.error(error);
-            setMessage("Failed to update profile");
-            setMessageType("error");
-        } finally {
-            setLoading(false);
-        }
+        updateProfileMutation.mutate(payload);
     };
 
+    if (isError) {
+        return (
+            <div className="text-red-500">
+                {error.response?.data?.message || "Failed to load profile"}
+            </div>
+        )
+    }
+
     return (
-        <Skeleton name="profile-page" loading={loading}>
+        <Skeleton name="profile-page" loading={loading} color="#e5e5e5" darkColor="#444444" animate="shimmer" shimmerColor="#eeeeee" darkShimmerColor="#555555">
             <div>
                 <h1 className="text-3xl font-bold mb-6">
                     My Profile
@@ -129,7 +133,7 @@ function Profile() {
                         <label className="block font-medium mb-1">
                             Phone Number
                         </label>
-                        <input type="text" name="phone" value={maskPhoneNumber(profile.phone)} onChange={handleChange} className="w-full border rounded-lg p-3" maxLength={10} minLength={10} />
+                        <input type="text" name="phone" value={maskPhoneNumber(profile.phone)} readOnly className="w-full border rounded-lg p-3" maxLength={10} minLength={10} />
                     </div>
 
                     {user.role === "lawyer" && (
@@ -169,15 +173,15 @@ function Profile() {
                             Confirm Password
                         </label>
                         <input type="text" name="confirmPassword" value={profile.confirmPassword || ""} onChange={handleChange} className="w-full border rounded-lg p-3" />
-                        {profile.password && profile.password !== profile.confirmPassword && (
+                        {profile.confirmPassword && profile.password !== profile.confirmPassword && (
                             <p className="text-red-500 text-sm mt-1">
                                 Passwords do not match
                             </p>
                         )}
                     </div>
 
-                    <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg">
-                        Save Changes
+                    <button type="submit" disabled={updateProfileMutation.isPending} className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg">
+                        {updateProfileMutation.isPending ? "Saving..." : "Save Changes"}
                     </button>
                 </form>
                 {message && (<MessageModal message={message} type={messageType} onClose={() => setMessage("")} />)}

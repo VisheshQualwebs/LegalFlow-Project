@@ -1,13 +1,13 @@
+import { memo } from "react";
 import { Link } from "react-router-dom";
 
-const UpcomingHearings = ({ hearings = [], viewUrl }) => {
+const UpcomingHearings = memo(({ hearings = [], viewUrl }) => {
     return (
         <div className="bg-white rounded-xl shadow p-6">
             <div className="flex justify-between mb-6">
                 <h2 className="text-xl font-semibold">
                     Upcoming Hearings
                 </h2>
-
                 <Link to={viewUrl} className="text-sm text-blue-600 hover:underline">
                     View All
                 </Link>
@@ -33,6 +33,6 @@ const UpcomingHearings = ({ hearings = [], viewUrl }) => {
             )}
         </div>
     );
-};
+});
 
 export default UpcomingHearings;

@@ -6,7 +6,6 @@ const QuickActions = ({ actions }) => {
             <h2 className="text-xl font-semibold mb-6">
                 Quick Actions
             </h2>
-
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {actions.map((action) => (
                     <Link key={action.title} to={action.url} className="border rounded-lg p-4 hover:bg-gray-50" >

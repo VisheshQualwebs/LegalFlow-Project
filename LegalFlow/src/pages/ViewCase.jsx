@@ -1,83 +1,81 @@
-import { useEffect, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMemo, useState } from "react";
 import DataTables from "../components/DataTables";
 import MessageModal from "../components/MessageModal";
 import useAuth from "../hooks/useAuth";
 import caseService from "../services/caseService";
 
+const getBadgeColor = (status) => {
+    switch (status) {
+        case "pending":
+            return "bg-yellow-100 text-yellow-700";
+        case "assigned":
+            return "bg-blue-100 text-blue-700";
+        case "in_progress":
+            return "bg-indigo-100 text-indigo-700";
+        case "completed":
+            return "bg-green-100 text-green-700";
+        case "closed":
+            return "bg-gray-200 text-gray-700";
+        default:
+            return "bg-gray-100 text-gray-600";
+    }
+};
+
 function ViewCase() {
-    const [cases, setCases] = useState([]);
     const [status, setStatus] = useState("all");
-    const [loading, setLoading] = useState(true);
     const [message, setMessage] = useState("");
     const [messageType, setMessageType] = useState("");
     const [deleteCaseId, setDeleteCaseId] = useState(null);
     const { user } = useAuth();
+    const queryClient = useQueryClient();
 
-    const columns = [
-        { label: "Case" }, { label: "Client" }, { label: "Lawyer" }, { label: "Status", className: "text-center" }
-    ]
-
-    if (user?.role === "admin" || user?.role === "client") {
-        columns.push({ label: "Action" });
-    }
-
-    const fetchCases = async (selectedStatus = "all") => {
-        try {
-            const params = selectedStatus === "all" ? {} : { status: selectedStatus };
-            const response = await caseService.list(params);
-            setCases(response.data.data);
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setLoading(false);
+    const columns = useMemo(() => {
+        const baseColumns = [
+            { label: "Case" }, { label: "Client" }, { label: "Lawyer" }, { label: "Status", className: "text-center" }
+        ]
+        if (user?.role === "admin" || user?.role === "client") {
+            baseColumns.push({ label: "Action" });
         }
-    };
+        return baseColumns;
+    }, [user?.role]);
 
-    useEffect(() => {
-        fetchCases(status);
-    }, [status]);
+    const { data: cases = [], isLoading: loading, isError } = useQuery({
+        queryKey: ["cases", status],
+        queryFn: async () => {
+            const params = status === "all" ? {} : { status };
+            const resp = await caseService.list(params);
+            return resp.data.data;
+        },
+    })
+
+    const deletMutation = useMutation({
+        mutationFn: (id) => caseService.remove(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["cases"],
+            })
+            setDeleteCaseId(null);
+            setMessage("Case deleted successfully");
+            setMessageType("success");
+        },
+        onError: () => {
+            setMessage("Failed to delete case");
+            setMessageType("error");
+            setDeleteCaseId(null);
+        }
+    })
 
     const handleDelete = async (id) => {
-        // const confirmDelete = window.confirm("Are you sure you want to delete this case?");
-        // if (!confirmDelete) {
-        //     return;
-        // }
         setDeleteCaseId(id);
         setMessage("Are you sure you want to delete this case?");
         setMessageType("confirm");
     }
 
-    const handleConfirmDelete = async () => {
-        try {
-            await caseService.remove(deleteCaseId);
-            await fetchCases(status);
-            setDeleteCaseId(null);
-            setMessage("Case deleted successfully");
-            setMessageType("success");
-        } catch (error) {
-            console.error(error);
-            setMessage("Failed to delete case");
-            setMessageType("error");
-            setDeleteCaseId(null);
-        }
+    const handleConfirmDelete = () => {
+        if (!deleteCaseId) return;
+        deletMutation.mutate(deleteCaseId);
     }
-
-    const badgeColor = (status) => {
-        switch (status) {
-            case "pending":
-                return "bg-yellow-100 text-yellow-700";
-            case "assigned":
-                return "bg-blue-100 text-blue-700";
-            case "in_progress":
-                return "bg-indigo-100 text-indigo-700";
-            case "completed":
-                return "bg-green-100 text-green-700";
-            case "closed":
-                return "bg-gray-200 text-gray-700";
-            default:
-                return "bg-gray-100 text-gray-600";
-        }
-    };
 
     return (
         <div>
@@ -120,16 +118,16 @@ function ViewCase() {
                         </td>
 
                         <td className="p-4 text-center">
-                            <span className={`px-3 py-1 rounded-full text-sm font-medium ${badgeColor(item.status)}`}>
+                            <span className={`px-3 py-1 rounded-full text-sm font-medium ${getBadgeColor(item.status)}`}>
                                 {item.status.replaceAll("_", " ")}
                             </span>
                         </td>
 
                         {(user?.role === "admin" || user?.role === "client") && (
                             <td className="p-4">
-                                <button onClick={() => handleDelete(item.id)}
+                                <button onClick={() => handleDelete(item.id)} disabled={deletMutation.isPending}
                                     className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg">
-                                    Delete
+                                    {deletMutation.isPending && deleteCaseId === item.id ? "Deleting..." : "Delete"}
                                 </button>
                             </td>
                         )}

@@ -1,39 +1,28 @@
-import { useEffect, useState } from "react";
-import caseService from "../services/caseService";
-import useAuth from "../hooks/useAuth";
+import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "boneyard-js/react";
+import { useState } from "react";
+import useAuth from "../hooks/useAuth";
+import caseService from "../services/caseService";
 
 const UpcomingHearingsPage = () => {
     const { user } = useAuth();
-    const [hearings, setHearings] = useState([]);
-    const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        console.log("UpcomingHearingsPage MOUNT");
-        if (!user?.id) return;
-        const load = async () => {
-            try {
-                const { data } = await caseService.list();
-                const cases = data.data || [];
-                const hearings = cases.filter((item) => user.role === "admin" ?  true : user.role === "lawyer"
-                        ? (item.lawyerId) === (user.id) : (item.clientId) === (user.id)
-                    )
-                    .filter(item => item.hearingDate && new Date(item.hearingDate) >= new Date())
-                    .sort((a, b) => new Date(a.hearingDate) - new Date(b.hearingDate));
-                setHearings(hearings);
-            } catch (error) {
-                console.error(error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        if (user?.id) load();
-        return () => console.log("UpcomingHearingsPage UNMOUNT");
-    }, [user?.id, user?.role]);
+    const { data: hearings = [], isLoading: loading } = useQuery({
+        queryKey: ["upcoming-hearings", user?.role, user?.id],
+        queryFn: async () => {
+            const { data } = await caseService.list();
+            const cases = data.data || [];
+            return cases.filter((item) =>
+                user?.role === "admin" ? true : user?.role === "lawyer"
+                    ? item.lawyerId === user.id : item.clientId === user.id)
+                .filter(item => item.hearingDate && new Date(item.hearingDate) >= new Date())
+                .sort((a, b) => new Date(a.hearingDate) - new Date(b.hearingDate));
+        },
+        enabled: !!user?.id,
+    })
 
     return (
-        <Skeleton name="assign-lawyer" loading={loading}>
+        <Skeleton name="assign-lawyer" loading={loading} color="#e5e5e5" darkColor="#444444" animate="shimmer" shimmerColor="#eeeeee" darkShimmerColor="#555555">
             <div>
                 <h1 className="text-3xl font-bold mb-6">Upcoming Hearings</h1>
                 {hearings.length === 0 ? (

@@ -1,66 +1,65 @@
-import { useEffect, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useCallback, useState } from "react";
 import DataTables from "../components/DataTables";
 import MessageModal from "../components/MessageModal";
 import caseService from "../services/caseService";
 
+
+const COLUMN = [
+    { label: "Title" },
+    { label: "Client" },
+    { label: "Status" },
+    { label: "Hearing Date" },
+    { label: "Hearing Time" },
+    { label: "Action" }
+]
+
 function ManageCases() {
-    const [cases, setCases] = useState([])
-    const [loading, setLoading] = useState(true);
     const [message, setMessage] = useState("");
     const [messageType, setMessageType] = useState("");
+    const queryClient = useQueryClient();
 
-    const column = [
-        { label: "Title" },
-        { label: "Client" },
-        { label: "Status" },
-        { label: "Hearing Date" },
-        { label: "Hearing Time" },
-        { label: "Action" }
-    ]
-
-    const loadCases = async () => {
-        try {
-            const response = await caseService.list();
-            setCases(response.data.data || []);
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setLoading(false);
+    const { data: cases = [], isLoading: loading } = useQuery({
+        queryKey: ["cases"],
+        queryFn: async () => {
+            const resp = await caseService.list();
+            return resp.data.data || [];
         }
-    };
+    })
 
-    useEffect(() => {
-        loadCases();
-    }, []);
-
-    const handleChange = (id, field, value) => {
+    const updateMutation = useMutation({
+        mutationFn: (id, data) => caseService.update(id, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["cases"]
+            });
+            setMessage("Case update successfully");
+            setMessageType("success");
+        },
+        onError: () => {
+            setMessage("Failed to update Case");
+            setMessageType("error");
+        }
+    })
+    const handleChange = (item) => {
         setCases(prev => prev.map(
             item => item.id === id ? { ...item, [field]: value } : item
         ));
     }
 
     const handleUpdate = async (item) => {
-        try {
-            await caseService.update(item.id, {
-                status: item.status,
-                hearingDate: item.hearingDate,
-                hearingTime: item.hearingTime
-            });
-            // alert("Case updated successfully");
-            setMessage("Case updated successfully");
-            setMessageType("success");
-        } catch (error) {
-            console.error(error);
-            // alert("Failed to update case");
-            setMessage("Failed to update case");
-            setMessageType("error");
-        }
+        updateMutation.mutate({
+            id: item.id,
+            data: {
+                [field]: value,
+            }
+        })
     };
 
     return (
         <div>
             <h1 className="text-3xl font-bold mb-6">Manage Cases</h1>
-            <DataTables name="manage-cases-table" loading={loading} columns={column} isEmpty={cases.length === 0} emptyMessage="No Cases Found">
+            <DataTables name="manage-cases-table" loading={loading} columns={COLUMN} isEmpty={cases.length === 0} emptyMessage="No Cases Found">
                 {cases.map(item => (
                     <tr>
                         <td className="p-4">{item.title}</td>

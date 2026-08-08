@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MessageModal from "../components/MessageModal";
 import caseService from "../services/caseService";
@@ -8,15 +9,6 @@ const CreateCase = () => {
     const navigate = useNavigate();
     const [message, setMessage] = useState("");
     const [messageType, setMessageType] = useState("");
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setLoading(false);
-        }, 500);
-
-        return () => clearTimeout(timer);
-    }, []);
 
     const validateForm = () => {
         const newErrors = {};
@@ -44,6 +36,19 @@ const CreateCase = () => {
         description: "",
         caseType: "",
         file: null,
+    });
+
+    const createCaseMutation = useMutation({
+        mutationFn: (data) => caseService.create(data),
+        onSuccess: (data) => {
+            setMessage("Case Registered Successfully!!");
+            setMessageType("success");
+            navigate("/my-cases");
+        },
+        onError: (error) => {
+            setMessage(error.message || "Unable to create case");
+            setMessageType("error");
+        }
     });
 
     const handleChange = (e) => {
@@ -96,17 +101,7 @@ const CreateCase = () => {
         data.append("description", formData.description);
         data.append("caseType", formData.caseType);
         data.append("file", formData.file);
-        try {
-            await caseService.create(data);
-            // alert("Case Registered Successfully");
-            setMessage("Case Registered Successfully");
-            setMessageType("success");
-            navigate("/my-cases");
-        } catch (error) {
-            // alert(error.message || "Unable to create case");
-            setMessage(error.message || "Unable to create case");
-            setMessageType("error");
-        }
+        createCaseMutation.mutate(data);
     };
 
     return (
@@ -170,8 +165,9 @@ const CreateCase = () => {
                     )}
 
                     <div className="flex justify-center">
-                        <button type="submit" className="w-full bg-black text-white py-3 rounded-xl font-semibold hover:bg-gray-800 transition">
-                            Create Case
+                        <button className="w-full bg-black text-white py-3 rounded-xl font-semibold hover:bg-gray-800 transition"
+                            disabled={createCaseMutation.isPending} type="submit">
+                            {createCaseMutation.isPending ? "Creating..." : "Create Case"}
                         </button>
                     </div>
                 </form>

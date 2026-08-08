@@ -1,63 +1,59 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { Skeleton } from "boneyard-js/react";
 import DashboardCard from "../components/DashboardCard";
+import QuickActions from "../components/QuickActions";
+import RecentCases from "../components/RecentCases";
 import StatusBar from "../components/StatusBar";
 import UpcomingHearings from "../components/UpcomingHearings";
-import RecentCases from "../components/RecentCases";
-import QuickActions from "../components/QuickActions";
+import useAuth from "../hooks/useAuth";
 import dashboardConfig from "../services/dashboardConfig";
 import dashboardService from "../services/dashboardService";
-import useAuth from "../hooks/useAuth";
-import { Skeleton } from "boneyard-js/react";
+
+const QUICK_ACTIONS = {
+    admin: [
+        { title: "Add Admin", description: "Add a new lawyer", url: "/settings" },
+        { title: "View Cases", description: "Manage all cases", url: "/view-cases" },
+        { title: "Assign Lawyer", description: "Assign lawyer to case", url: "/assign-lawyers" },
+    ],
+
+    lawyer: [
+        { title: "My Cases", description: "Manage assigned cases", url: "/my-cases" },
+        { title: "Clients", description: "View your clients", url: "/clients" },
+        { title: "Documents", description: "Manage case documents", url: "/documents" },
+    ],
+
+    client: [
+        { title: "Create Case", description: "Start a new legal case", url: "/create-case" },
+        { title: "My Cases", description: "Track your cases", url: "/my-cases" },
+        { title: "Documents", description: "View your documents", url: "/document" },
+    ],
+};
 
 const UserDashboard = () => {
     const { user } = useAuth();
-    const [stats, setStats] = useState({});
-    const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        if (!user?.role) return;
-        const loadDashboard = async () => {
-            try {
-                const response = await dashboardService.getDashboard(user.role, user.id);
-                setStats(response.data);
-            } catch (error) {
-                console.error(error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        loadDashboard();
-    }, [user?.role, user?.id]);
+    const { data: stats = {}, isLoading: loading, isError, error } = useQuery({
+        queryKey: ["dashboard", user?.role, user?.id],
+        queryFn: async () => {
+            const resp = await dashboardService.getDashboard(user.role, user.id);
+            return resp.data;
+        },
+        enabled: !!user?.role && !!user?.id,
+    })
 
-    // if (loading) return <h2>Loading dashboard...</h2>;
     if (!user) return null;
 
+    if (isError) {
+        return (
+            <p className="text-red-500">{error?.message || "Failed to load dashboard"}</p>
+        )
+    }
     const isAdmin = user.role === "admin";
     const hearingViewUrl = "/upcoming-hearings";
     const recentCasesViewUrl = isAdmin ? "/view-cases" : "/my-cases";
 
-    const quickActions = {
-        admin: [
-            { title: "Add Lawyer", description: "Add a new lawyer", url: "/settings" },
-            { title: "View Cases", description: "Manage all cases", url: "/view-cases" },
-            { title: "Assign Lawyer", description: "Assign lawyer to case", url: "/assign-lawyers" },
-        ],
-
-        lawyer: [
-            { title: "My Cases", description: "Manage assigned cases", url: "/my-cases" },
-            { title: "Clients", description: "View your clients", url: "/clients" },
-            { title: "Documents", description: "Manage case documents", url: "/documents" },
-        ],
-
-        client: [
-            { title: "Create Case", description: "Start a new legal case", url: "/create-case" },
-            { title: "My Cases", description: "Track your cases", url: "/my-cases" },
-            { title: "Documents", description: "View your documents", url: "/document" },
-        ],
-    };
-
     return (
-        <Skeleton name="user-dashboard" loading={loading} >
+        <Skeleton name="user-dashboard" loading={loading} color="#e5e5e5" darkColor="#444444" animate="shimmer" shimmerColor="#eeeeee" darkShimmerColor="#555555">
             <div>
                 <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
 
@@ -86,7 +82,7 @@ const UserDashboard = () => {
                 </div>
 
                 <div className="mt-6">
-                    <QuickActions actions={quickActions[user.role] || []} />
+                    <QuickActions actions={QUICK_ACTIONS[user.role] || []} />
                 </div>
             </div>
         </Skeleton>

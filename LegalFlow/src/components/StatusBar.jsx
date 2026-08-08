@@ -1,6 +1,5 @@
 const StatusBar = ({ label, value = 0, total = 0}) => {
     const percentage = total ? (value/total) * 100 : 0;
-
     return (
         <div>
             <div className="flex justify-between mb-2">

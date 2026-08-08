@@ -1,12 +1,11 @@
-import { useEffect, useState } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMemo, useState } from "react";
+import { useSelector } from "react-redux";
 import DataTables from "../components/DataTables";
 import MessageModal from "../components/MessageModal";
 import documentService from "../services/documentService";
-import { useSelector } from "react-redux";
 
 function Documents() {
-    const [documents, setDocuments] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [summary, setSummary] = useState("");
     const [loadingSummaryId, setLoadingSummaryId] = useState(null);
     const [selectedDocument, setSelectedDocument] = useState(null);
@@ -16,47 +15,45 @@ function Documents() {
 
     const user = useSelector((state) => state.auth.user);
 
-    const column = [
-        { label: "Case" },
-        ...(user?.role === "lawyer" ? [{ label: "Client" }] : []),
-        { label: "File Name" },
-        { label: "Date" },
-        { label: "View" },
-        { label: "Download" },
-        { label: "Summarize" },
-    ]
+    const column = useMemo(() => {
+        return [
+            { label: "Case" },
+            // ...(user?.role === "lawyer" ? [{ label: "Client" }] : []),
+            ...(user?.role === "lawyer" ? [{ label: "Client" }] : []),
+            { label: "File Name" },
+            { label: "Date" },
+            { label: "View" },
+            { label: "Download" },
+            { label: "Summarize" },
+        ]
+    }, [user?.role])
 
-    useEffect(() => {
-        loadDocuments();
-    }, []);
+    const { data: documents = [], isLoading: loading } = useQuery({
+        queryKey: ["documents", user?.role, user?.id],
+        queryFn: async () => {
+            return documentService.getDocuments();
+        },
+        enabled: !!user?.id,
+    });
 
-    const loadDocuments = async () => {
-        try {
-            const res = await documentService.getDocuments();
-            setDocuments(res);
-        } catch (error) {
-            console.log(error);
-        } finally {
-            setLoading(false);
-        }
-    }
-
-    const handleSummarize = async (documentId) => {
-        // console.log("summarize button clicked")
-        try {
-            setLoadingSummaryId(documentId);
-            const response = await documentService.summarizeDocument(documentId);
-            setSummary(response.summary);
+    const summarizeMutation = useMutation({
+        mutationFn: (documentId) => documentService.summarizeDocument(documentId),
+        onSuccess: (resp, documentId) => {
+            setSummary(resp.summary);
             setSelectedDocument(documentId);
             setShowSummaryModal(true);
-        } catch (error) {
-            console.error("Error summarizing document:", error);
-            // alert("Failed to summarize document.")
+            setLoadingSummaryId(null);
+        },
+        onError: () => {
             setMessage("Failed to summarize document.");
             setMessageType("error");
-        } finally {
             setLoadingSummaryId(null);
         }
+    })
+
+    const handleSummarize = async (documentId) => {
+        setLoadingSummaryId(documentId);
+        summarizeMutation.mutate(documentId);
     }
 
     return (

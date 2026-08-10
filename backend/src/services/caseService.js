@@ -33,8 +33,8 @@ const list = async (user, query) => {
         }
     }
 
-    if (query.status) { 
-        payload.status = query.status 
+    if (query.status) {
+        payload.status = query.status
     }
 
     options.include = [
@@ -49,6 +49,26 @@ const list = async (user, query) => {
             attributes: ["id", "fullName", "email"]
         }
     ];
+
+    if (query.page || query.limit) {
+        const page = Math.max(Number(query.page) || 1, 1);
+        const limit = Math.min(Number(query.limit) || 20, 100);
+        const offset = (page - 1) * limit;
+        const res = await Case.findAndCountAll({
+            where: payload,
+            ...options,
+            limit,
+            offset
+        })
+        return {
+            data: res.rows,
+            pagination: {
+                page, limit,
+                total: res.count,
+                totalPages: Math.ceil(res.count / limit)
+            }
+        };
+    }
 
     return await Case.findAll({
         where: payload,

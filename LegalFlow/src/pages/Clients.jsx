@@ -16,7 +16,7 @@ function Clients() {
         queryKey: ["cases", { view: "clients" }],
         queryFn: async () => {
             const resp = await caseService.list();
-            return resp.data.data;
+            return resp.data || [];
         }
     })
 

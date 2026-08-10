@@ -21,7 +21,7 @@ const AssignLawyers = () => {
         queryKey: ["unassigned-cases"],
         queryFn: async () => {
             const resp = await caseService.list();
-            return (resp.data.data || []).filter(item => !item.lawyerId);
+            return (resp || []).filter(item => !item.lawyerId);
         },
     });
 

@@ -1,5 +1,6 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import DataTables from "../components/DataTables";
 import MessageModal from "../components/MessageModal";
 import useAuth from "../hooks/useAuth";
@@ -29,6 +30,15 @@ function ViewCase() {
     const [deleteCaseId, setDeleteCaseId] = useState(null);
     const { user } = useAuth();
     const queryClient = useQueryClient();
+    const loadMoreRef = useRef(null);
+    const [sortConfig, setSortConfig] = useState({
+        key: null,
+        dir: "asc",
+    })
+
+    const [searchParams] = useSearchParams();
+    const initialPage = searchParams.get("page") || 1;
+    const limit = searchParams.get("limit") || 10;
 
     const columns = useMemo(() => {
         const baseColumns = [
@@ -40,14 +50,85 @@ function ViewCase() {
         return baseColumns;
     }, [user?.role]);
 
-    const { data: cases = [], isLoading: loading, isError } = useQuery({
-        queryKey: ["cases", status],
-        queryFn: async () => {
-            const params = status === "all" ? {} : { status };
-            const resp = await caseService.list(params);
-            return resp.data.data;
+    const { data, isLoading: loading, isError, isFetchingNextPage, fetchNextPage, hasNextPage, } = useInfiniteQuery({
+        queryKey: ["cases", status, initialPage, limit],
+        queryFn: async ({ pageParam }) => {
+            const params = {
+                page: pageParam,
+                limit,
+            }
+            if (status !== "all") {
+                params.status = status
+            };
+            const response = await caseService.list(params);
+            return response;
         },
-    })
+        initialPageParam: initialPage,
+        getNextPageParam: (lastPage) => {
+            const { page, totalPages } = lastPage.pagination;
+            return page < totalPages ? page + 1 : undefined;
+        }
+    });
+
+    const cases = data?.pages.flatMap((page) => page.data || []) || [];
+
+    const sortedCases = useMemo(() => {
+        if (!sortConfig.key) {
+            return cases;
+        }
+
+        return [...cases].sort((a, b) => {
+            let valueA, valueB;
+
+            switch (sortConfig.key) {
+                case "title":
+                    valueA = a.title || "";
+                    valueB = b.title || "";
+                    break;
+
+                case "client":
+                    valueA = a.lawyer?.fullName || "";
+                    valueB = b.lawyer?.fullName || "";
+                    break;
+                
+                case "lawyer":
+                    valueA = a.client?.fullName || "";
+                    valueB = b.client?.fullName || "";
+                    break;
+
+                case "status":
+                    valueA = a.status || "";
+                    valueB = b.status || "";
+                    break;
+
+                default: return 0;
+            }
+
+            const comp = String(valueA).localeCompare(
+                String(valueB),
+                undefined,
+                { sensitivity: "base" }
+            )
+
+            return sortConfig.dir === "asc" ? comp : -comp;
+        });
+    }, [cases, sortConfig]);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+                fetchNextPage();
+            }
+        }, {
+            rootMargin: "200px",
+        });
+        if (loadMoreRef.current) {
+            observer.observe(loadMoreRef.current);
+        }
+        return () => {
+            observer.disconnect();
+        }
+    }, [fetchNextPage, hasNextPage, isFetchingNextPage])
 
     const deletMutation = useMutation({
         mutationFn: (id) => caseService.remove(id),
@@ -84,19 +165,48 @@ function ViewCase() {
                     <h1 className="text-4xl font-bold">Cases</h1>
                     <p className="text-gray-500 mt-1">View all legal cases.</p>
                 </div>
+                <div className="flex items-center gap-3">
+                    <select value={status} onChange={(e) => setStatus(e.target.value)}
+                        className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black" >
+                        <option value="all">All Cases</option>
+                        <option value="pending">Pending</option>
+                        <option value="assigned">Assigned</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="completed">Completed</option>
+                        <option value="closed">Closed</option>
+                    </select>
 
-                <select value={status} onChange={(e) => setStatus(e.target.value)}
-                    className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black" >
-                    <option value="all">All Cases</option>
-                    <option value="pending">Pending</option>
-                    <option value="assigned">Assigned</option>
-                    <option value="in_progress">In Progress</option>
-                    <option value="completed">Completed</option>
-                    <option value="closed">Closed</option>
-                </select>
+                    <select value={sortConfig.key} onChange={(e) => {
+                        setSortConfig({ key: e.target.value, dir: "asc" })
+                    }} className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black">
+                        <option value="">Sort By</option>
+                        <option value="title">Case</option>
+                        <option value="status">Status</option>
+                        {user?.role !== "client" &&
+                            <>
+                                <option value="client">Client</option>
+                            </>
+                        }
+                        {user?.role !== "client" && user?.role !== "lawyer" &&
+                            <>
+                                <option value="lawyer">Lawyer</option>
+                            </>
+                        }
+                    </select>
+
+                    <select value={sortConfig.dir} onChange={(e) => {
+                        setSortConfig((prev) => ({
+                            ...prev,
+                            dir: e.target.value,
+                        }));
+                    }} disabled={!sortConfig.key} className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black">
+                        <option value="asc">A-Z</option>
+                        <option value="desc">Z-A</option>
+                    </select>
+                </div>
             </div>
             <DataTables name="view-cases-page" loading={loading} columns={columns} isEmpty={cases.length === 0} emptyMessage="No Case Found!!">
-                {cases.map(item => (
+                {sortedCases.map(item => (
                     <tr key={item.id} className="border-b hover:bg-gray-50 transition">
                         <td className="p-4">
                             <div className="font-semibold">
@@ -118,8 +228,8 @@ function ViewCase() {
                         </td>
 
                         <td className="p-4 text-center">
-                            <span className={`px-3 py-1 rounded-full text-sm font-medium ${getBadgeColor(item.status)}`}>
-                                {item.status.replaceAll("_", " ")}
+                            <span className={`px-3 py-1 rounded-full text-sm font-medium ${getBadgeColor(item.status || "unknown")}`}>
+                                {(item.status || "unknown").replaceAll("_", " ")}
                             </span>
                         </td>
 
@@ -133,6 +243,19 @@ function ViewCase() {
                         )}
                     </tr>
                 ))}
+                <tr>
+                    <td colSpan={columns.length} className="text-center p-6">
+                        <div ref={loadMoreRef}>
+                            {isFetchingNextPage && (
+                                <span className="text-gray-500">Loading more cases...</span>
+                            )}
+                            {!hasNextPage &&
+                                cases.length > 0 && (
+                                    <span className="text-gray-400">No more cases</span>
+                                )}
+                        </div>
+                    </td>
+                </tr>
             </DataTables>
             {message && (<MessageModal message={message} type={messageType}
                 onClose={() => { setMessage(""), setDeleteCaseId(null) }}

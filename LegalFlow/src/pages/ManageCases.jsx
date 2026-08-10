@@ -23,7 +23,7 @@ function ManageCases() {
         queryKey: ["cases"],
         queryFn: async () => {
             const resp = await caseService.list();
-            return resp.data.data || [];
+            return resp.data || [];
         }
     })
 

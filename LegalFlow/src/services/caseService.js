@@ -2,9 +2,10 @@ import api from "./api";
 
 // const list = () => api.get("/cases");
 
-const list = (params = {}) => api.get("/cases", { params })
-
-// const create = (payload) => api.post("/cases", payload);
+const list = async (params = {}) => {
+    const resp = await api.get("/cases", { params });
+    return resp.data.data;
+};
 
 const update = (id, payload) => api.patch(`/cases/${id}`, payload);
 

@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Skeleton } from "boneyard-js/react";
 import DashboardCard from "../components/DashboardCard";
 import QuickActions from "../components/QuickActions";
@@ -8,6 +8,8 @@ import UpcomingHearings from "../components/UpcomingHearings";
 import useAuth from "../hooks/useAuth";
 import dashboardConfig from "../services/dashboardConfig";
 import dashboardService from "../services/dashboardService";
+import socket from "../utils/socket";
+import { useEffect } from "react";
 
 const QUICK_ACTIONS = {
     admin: [
@@ -31,6 +33,7 @@ const QUICK_ACTIONS = {
 
 const UserDashboard = () => {
     const { user } = useAuth();
+    const queryClient = useQueryClient();
 
     const { data: stats = {}, isLoading: loading, isError, error } = useQuery({
         queryKey: ["dashboard", user?.role, user?.id],
@@ -40,6 +43,19 @@ const UserDashboard = () => {
         },
         enabled: !!user?.role && !!user?.id,
     })
+
+    useEffect(() => {
+        if (!user?.role || !user?.id) return;
+        const handleUpdate = () => {
+            queryClient.invalidateQueries({
+                queryKey: ["dashboard", user?.role, user?.id],
+            })
+        };
+        socket.on("dashboardUpdate", handleUpdate);
+        return () => {
+            socket.off("dashboardUpdate", handleUpdate);
+        };
+    }, [queryClient, user?.role, user?.id]);
 
     if (!user) return null;
 

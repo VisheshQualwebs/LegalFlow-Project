@@ -5,6 +5,7 @@ import DataTables from "../components/DataTables";
 import MessageModal from "../components/MessageModal";
 import useAuth from "../hooks/useAuth";
 import caseService from "../services/caseService";
+import socket from "../utils/socket";
 
 const getBadgeColor = (status) => {
     switch (status) {
@@ -87,13 +88,13 @@ function ViewCase() {
                     break;
 
                 case "client":
-                    valueA = a.lawyer?.fullName || "";
-                    valueB = b.lawyer?.fullName || "";
-                    break;
-                
-                case "lawyer":
                     valueA = a.client?.fullName || "";
                     valueB = b.client?.fullName || "";
+                    break;
+
+                case "lawyer":
+                    valueA = a.lawyer?.fullName || "";
+                    valueB = b.lawyer?.fullName || "";
                     break;
 
                 case "status":
@@ -129,6 +130,26 @@ function ViewCase() {
             observer.disconnect();
         }
     }, [fetchNextPage, hasNextPage, isFetchingNextPage])
+
+    useEffect(() => {
+        if (!cases.length) return;
+        cases.forEach((item) => {
+            socket.emit("joinCase", item.id)
+        });
+        const handleCaseUpdate = (updatedCase) => {
+            console.log("Real time case update received:", updatedCase);
+            queryClient.invalidateQueries({
+                queryKey: ["cases"],
+            });
+        };
+        socket.on("case:updated", handleCaseUpdate);
+        return () => {
+            cases.forEach((item) => {
+                socket.emit("leaveCase", item.id)
+            });
+            socket.off("case:updated", handleCaseUpdate);
+        };
+    }, [cases, queryClient]);
 
     const deletMutation = useMutation({
         mutationFn: (id) => caseService.remove(id),

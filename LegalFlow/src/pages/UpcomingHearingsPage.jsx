@@ -10,8 +10,8 @@ const UpcomingHearingsPage = () => {
     const { data: hearings = [], isLoading: loading } = useQuery({
         queryKey: ["upcoming-hearings", user?.role, user?.id],
         queryFn: async () => {
-            const { data } = await caseService.list();
-            const cases = data || [];
+            const cases = await caseService.list();
+            // const cases = data || [];
             return cases.filter((item) =>
                 user?.role === "admin" ? true : user?.role === "lawyer"
                     ? item.lawyerId === user.id : item.clientId === user.id)

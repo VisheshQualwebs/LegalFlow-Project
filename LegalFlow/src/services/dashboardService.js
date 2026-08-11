@@ -9,7 +9,7 @@ const getDashboard = async (role = "client", userId) => {
         ]);
 
         const cases = casesResponse || [];
-        const users = usersResponse.data.data || [];
+        const users = role === "admin" ? usersResponse.data.data || [] : [];
 
         const normalizedCases = cases.map((item) => ({
             ...item,

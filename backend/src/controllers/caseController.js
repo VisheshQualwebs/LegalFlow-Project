@@ -3,6 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const Document = require("../models/Document");
+const { getIO } = require("../utils/socket");
 
 const create = async (req, resp) => {
     const file = await req.file();
@@ -37,7 +38,8 @@ const create = async (req, resp) => {
         fileType: file.mimetype,
         fileSize: file.file.bytesRead
     });
-
+    const io = getIO();
+    io.emit("dashboardUpdate");
     return resp.code(201).send({
         success: true,
         message: "Case Created Successfully",
@@ -66,19 +68,27 @@ const read = async (req, resp) => {
 };
 
 const update = async (req, resp) => {
-    await caseService.update(
+    const updatedCase = await caseService.update(
         req.params.id,
         req.user,
         req.body
     );
+    const io = getIO();
+    io.to(`case:${req.params.id}`).emit("case:updated", updatedCase);
+    io.emit("dashboardUpdate")
     return resp.send({
         success: true,
-        message: "Case Updated Successfully"
+        message: "Case Updated Successfully",
+        data: updatedCase
     });
 };
 
 const destroy = async (req, resp) => {
-    await caseService.destroy(req.params.id, req.user);
+    const id = req.params.id;
+    await caseService.destroy(id, req.user);
+    const io = getIO();
+    io.to(`case:${id}`).emit("case:deleted", { id });
+    io.emit("dashboardUpdate");
     return resp.send({
         success: true,
         message: "Case Deleted Successfully"

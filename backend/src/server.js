@@ -3,15 +3,14 @@ require("./models")
 require("./jobs/hearingReminder");
 const app = require("./app");
 const sequelize = require("./config/database");
+const { initSocket } = require("./utils/socket");
 
 const startServer = async () => {
     try {
         await sequelize.authenticate();
         console.log("Database Connected");
-
-        // await sequelize.sync({ alter: true });
-        // console.log("Tables Synced");
-
+        await app.ready();
+        initSocket(app.server);
         await app.listen({
             port: process.env.PORT,
             host: "0.0.0.0"

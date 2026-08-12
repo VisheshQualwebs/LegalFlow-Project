@@ -14,7 +14,7 @@ export const caseColumns = [
     { label: "Action" },
 ];
 
-export const clinetColumns = [
+export const clientColumns = [
     { label: "Client" },
     { label: "Email" },
     { label: "Cases", className: "text-center" },

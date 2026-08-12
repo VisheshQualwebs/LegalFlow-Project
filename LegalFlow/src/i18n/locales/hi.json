@@ -1,0 +1,22 @@
+{
+  "sidebar": {
+    "dashboard": "डैशबोर्ड",
+    "createCase": "केस बनाएं",
+    "clients": "क्लाइंट",
+    "myCases": "मेरे केस",
+    "manageLawyers": "वकीलों का प्रबंधन",
+    "manageCases": "केस प्रबंधन",
+    "upcomingHearings": "आगामी सुनवाई",
+    "viewCases": "केस देखें",
+    "assignLawyers": "वकील नियुक्त करें",
+    "document": "दस्तावेज़",
+    "profile": "प्रोफ़ाइल",
+    "settings": "सेटिंग्स"
+  },
+  "navbar": {
+    "welcome": "स्वागत है",
+    "logout": "लॉग आउट",
+    "logoutConfirm": "क्या आप वाकई लॉग आउट करना चाहते हैं?",
+    "logoutFailed": "लॉग आउट करने में विफल"
+  }
+}

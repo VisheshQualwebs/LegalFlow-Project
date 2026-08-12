@@ -80,7 +80,6 @@ function ViewCase() {
 
         return [...cases].sort((a, b) => {
             let valueA, valueB;
-
             switch (sortConfig.key) {
                 case "title":
                     valueA = a.title || "";
@@ -110,7 +109,6 @@ function ViewCase() {
                 undefined,
                 { sensitivity: "base" }
             )
-
             return sortConfig.dir === "asc" ? comp : -comp;
         });
     }, [cases, sortConfig]);
@@ -204,14 +202,10 @@ function ViewCase() {
                         <option value="title">Case</option>
                         <option value="status">Status</option>
                         {user?.role !== "client" &&
-                            <>
-                                <option value="client">Client</option>
-                            </>
+                            <option value="client">Client</option>
                         }
                         {user?.role !== "client" && user?.role !== "lawyer" &&
-                            <>
-                                <option value="lawyer">Lawyer</option>
-                            </>
+                            <option value="lawyer">Lawyer</option>
                         }
                     </select>
 
@@ -279,7 +273,7 @@ function ViewCase() {
                 </tr>
             </DataTables>
             {message && (<MessageModal message={message} type={messageType}
-                onClose={() => { setMessage(""), setDeleteCaseId(null) }}
+                onClose={() => { setMessage(""); setDeleteCaseId(null) }}
                 onConfirm={handleConfirmDelete} confirmText="Delete" />)}
         </div>
     );

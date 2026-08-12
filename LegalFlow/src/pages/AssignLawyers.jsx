@@ -4,13 +4,7 @@ import DataTables from "../components/DataTables";
 import MessageModal from "../components/MessageModal";
 import caseService from "../services/caseService";
 import userService from "../services/userService";
-
-const COLUMN = [
-    { label: "Case" },
-    { label: "Client" },
-    { label: "Lawyer" },
-    { label: "Status" }
-]
+import { assignedCaseColumns } from "../config/column";
 
 const AssignLawyers = () => {
     const [message, setMessage] = useState("");
@@ -63,7 +57,7 @@ const AssignLawyers = () => {
             <h1 className="text-3xl font-bold mb-6">
                 Assign Lawyers
             </h1>
-            <DataTables name="assign-lawyer" loading={loading} columns={COLUMN} isEmpty={cases.length === 0} emptyMessage="No Cases Found to Assign to Lawyers">
+            <DataTables name="assign-lawyer" loading={loading} columns={assignedCaseColumns} isEmpty={cases.length === 0} emptyMessage="No Cases Found to Assign to Lawyers">
                 {cases.map(item => (
                     <tr key={item.id}>
                         <td className="p-4">{item.title}</td>

@@ -96,8 +96,8 @@ const update = async (currentUser, id, body) => {
         Object.assign(user, body);
     } else if (currentUser.id == id) {
         delete body.role,
-        delete body.status,
-        Object.assign(user, body);
+            delete body.status,
+            Object.assign(user, body);
     } else {
         throw new Error("Access Denied");
     }

@@ -2,14 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import DataTables from "../components/DataTables";
 import caseService from "../services/caseService";
-
-const COLUMN = [
-    { label: "Client" },
-    { label: "Email" },
-    { label: "Cases", className: "text-center" },
-    { label: "Pending", className: "text-center" },
-    { label: "Completed", className: "text-center" },
-]
+import { clientColumns } from "../config/column";
 
 function Clients() {
     const { data: cases = [], isLoading: loading, isError, error } = useQuery({
@@ -54,7 +47,7 @@ function Clients() {
                     Clients assigned to your legal cases.
                 </p>
             </div>
-            <DataTables name="clients-table" loading={loading} columns={COLUMN} isEmpty={clients.length === 0} emptyMessage="No Clients Found">
+            <DataTables name="clients-table" loading={loading} columns={clientColumns} isEmpty={clients.length === 0} emptyMessage="No Clients Found">
                 {clients.map(item => (
                     <tr key={item.id} className="border-b hover:bg-gray-50">
                         <td className="p-4 font-semibold">

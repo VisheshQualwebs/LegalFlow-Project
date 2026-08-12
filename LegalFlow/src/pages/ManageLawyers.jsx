@@ -3,13 +3,7 @@ import { useMemo, useState } from "react";
 import DataTables from "../components/DataTables";
 import MessageModal from "../components/MessageModal";
 import userService from "../services/userService";
-
-const COLUMN = [
-    { label: "Name" },
-    { label: "Email" },
-    { label: "Status" },
-    { label: "Action", className: "text-center" },
-]
+import { lawyerColumns } from "../config/column"
 
 function ManageLawyers() {
     const [message, setMessage] = useState("");
@@ -51,7 +45,7 @@ function ManageLawyers() {
     };
 
     const filteredLawyers = useMemo(() => {
-        if(status === "all"){
+        if (status === "all") {
             return lawyers;
         }
         return lawyers.filter((lawyer) => lawyer.status === status);
@@ -121,7 +115,7 @@ function ManageLawyers() {
                     </select>
                 </div>
             </div>
-            <DataTables name="manage-lawyer-page" loading={loading} columns={COLUMN} isEmpty={lawyers.length === 0} emptyMessage="No Lawyers Found!!">
+            <DataTables name="manage-lawyer-page" loading={loading} columns={lawyerColumns} isEmpty={lawyers.length === 0} emptyMessage="No Lawyers Found!!">
                 {sortedLawyers.map(item => (
                     <tr key={item.email}>
                         <td className="p-4">{item.fullName}</td>

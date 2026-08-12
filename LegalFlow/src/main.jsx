@@ -6,6 +6,7 @@ import App from "./App";
 import "./index.css";
 import { store } from "./redux/store";
 import "./bones/registry";
+import "./i18n/i18n";
 
 const queryClient = new QueryClient();
 createRoot(document.getElementById("root")).render(

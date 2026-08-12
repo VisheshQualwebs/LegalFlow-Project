@@ -1,0 +1,22 @@
+{
+    "navbar": {
+        "welcome": "Swagat hai",
+        "logout": "band kare",
+        "logoutConfirm": "sach much band karna chhahte ho",
+        "logoutFailed": "sorry, band nhi ho paya"
+    },
+    "sidebar": {
+        "dashboard": "Dashboard",
+        "createCase": "Case banao",
+        "clients": "Customer",
+        "manageLawyers": "Lawyer sambhalo",
+        "manageCases": "Cases Sambhalo",
+        "viewCases": "Case Dekho",
+        "assignLawyers": "Lawyer jodo case mai",
+        "document": "document dekho",
+        "profile": "Profile dekh lo",
+        "settings": "setting kar lo",
+        "myCases": "case dekh lo",
+        "upcomingHearings": "sunvai ki date"
+    }
+}

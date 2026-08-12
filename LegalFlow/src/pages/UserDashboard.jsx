@@ -6,30 +6,11 @@ import RecentCases from "../components/RecentCases";
 import StatusBar from "../components/StatusBar";
 import UpcomingHearings from "../components/UpcomingHearings";
 import useAuth from "../hooks/useAuth";
-import dashboardConfig from "../services/dashboardConfig";
+import dashboardConfig from "../config/dashboardConfig";
 import dashboardService from "../services/dashboardService";
 import socket from "../utils/socket";
 import { useEffect } from "react";
-
-const QUICK_ACTIONS = {
-    admin: [
-        { title: "Add Admin", description: "Add a new lawyer", url: "/settings" },
-        { title: "View Cases", description: "Manage all cases", url: "/view-cases" },
-        { title: "Assign Lawyer", description: "Assign lawyer to case", url: "/assign-lawyers" },
-    ],
-
-    lawyer: [
-        { title: "My Cases", description: "Manage assigned cases", url: "/my-cases" },
-        { title: "Clients", description: "View your clients", url: "/clients" },
-        { title: "Documents", description: "Manage case documents", url: "/documents" },
-    ],
-
-    client: [
-        { title: "Create Case", description: "Start a new legal case", url: "/create-case" },
-        { title: "My Cases", description: "Track your cases", url: "/my-cases" },
-        { title: "Documents", description: "View your documents", url: "/document" },
-    ],
-};
+import quickActions from "../config/quickActions";
 
 const UserDashboard = () => {
     const { user } = useAuth();
@@ -45,7 +26,7 @@ const UserDashboard = () => {
     })
 
     useEffect(() => {
-        if (!user?.role || !user?.id) return;
+        if (!user) return;
         const handleUpdate = () => {
             queryClient.invalidateQueries({
                 queryKey: ["dashboard", user?.role, user?.id],
@@ -65,14 +46,11 @@ const UserDashboard = () => {
         )
     }
     const isAdmin = user.role === "admin";
-    const hearingViewUrl = "/upcoming-hearings";
-    const recentCasesViewUrl = isAdmin ? "/view-cases" : "/my-cases";
 
     return (
         <Skeleton name="user-dashboard" loading={loading} color="#e5e5e5" darkColor="#444444" animate="shimmer" shimmerColor="#eeeeee" darkShimmerColor="#555555">
             <div>
                 <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
-
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
                     {(dashboardConfig[user.role] || []).map(card => (
                         <DashboardCard key={card.key} title={card.title} value={stats[card.key] ?? 0} />
@@ -90,15 +68,15 @@ const UserDashboard = () => {
                         </div>
                     </div>
 
-                    <UpcomingHearings hearings={stats.upcomingHearings} viewUrl={hearingViewUrl} />
+                    <UpcomingHearings hearings={stats.upcomingHearings} viewUrl="/upcoming-hearings" />
                 </div>
 
                 <div className="mt-6">
-                    <RecentCases cases={stats.recentCases} viewUrl={recentCasesViewUrl} />
+                    <RecentCases cases={stats.recentCases} viewUrl={isAdmin ? "/view-cases" : "/my-cases"} />
                 </div>
 
                 <div className="mt-6">
-                    <QuickActions actions={QUICK_ACTIONS[user.role] || []} />
+                    <QuickActions actions={quickActions[user.role]} />
                 </div>
             </div>
         </Skeleton>

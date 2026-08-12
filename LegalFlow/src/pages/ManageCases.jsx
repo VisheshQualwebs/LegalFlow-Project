@@ -4,15 +4,7 @@ import DataTables from "../components/DataTables";
 import MessageModal from "../components/MessageModal";
 import caseService from "../services/caseService";
 import socket from "../utils/socket"
-
-const COLUMN = [
-    { label: "Title" },
-    { label: "Client" },
-    { label: "Status" },
-    { label: "Hearing Date" },
-    { label: "Hearing Time" },
-    { label: "Action" }
-]
+import { caseColumns } from "../config/column"
 
 function ManageCases() {
     const [message, setMessage] = useState("");
@@ -29,7 +21,7 @@ function ManageCases() {
     })
 
     useEffect(() => {
-        if(!cases.length) return;
+        if (!cases.length) return;
         cases.forEach((item) => {
             socket.emit("joinCase", item.id);
         });
@@ -50,7 +42,7 @@ function ManageCases() {
     }, [cases, queryClient])
 
     const updateMutation = useMutation({
-        mutationFn: ({id, data}) => caseService.update(id, data),
+        mutationFn: ({ id, data }) => caseService.update(id, data),
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ["cases"]
@@ -65,7 +57,7 @@ function ManageCases() {
     })
 
     const handleChange = (id, field, value) => {
-        setChanges((prev) =>({
+        setChanges((prev) => ({
             ...prev,
             [id]: {
                 ...prev[id],
@@ -76,7 +68,7 @@ function ManageCases() {
 
     const handleUpdate = async (item) => {
         const data = changes[item.id];
-        if(!data || Object.keys(data).length === 0) {
+        if (!data || Object.keys(data).length === 0) {
             setMessage("No data changes");
             setMessageType("error");
             return;
@@ -90,7 +82,7 @@ function ManageCases() {
     return (
         <div>
             <h1 className="text-3xl font-bold mb-6">Manage Cases</h1>
-            <DataTables name="manage-cases-table" loading={loading} columns={COLUMN} isEmpty={cases.length === 0} emptyMessage="No Cases Found">
+            <DataTables name="manage-cases-table" loading={loading} columns={caseColumns} isEmpty={cases.length === 0} emptyMessage="No Cases Found">
                 {cases.map(item => (
                     <tr>
                         <td className="p-4">{item.title}</td>

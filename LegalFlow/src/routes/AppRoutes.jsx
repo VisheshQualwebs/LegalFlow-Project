@@ -6,7 +6,7 @@ import Login from "../pages/auth/Login";
 import Signup from "../pages/auth/Signup";
 import Home from "../pages/Home";
 import ProtectedRoutes from "./ProtectedRoutes";
-import { routeConfig } from "./routeConfig";
+import { routeConfig } from "../config/routeConfig";
 
 function AppRoutes() {
     const user = useSelector((state) => state.auth.user);

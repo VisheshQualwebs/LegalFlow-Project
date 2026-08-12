@@ -1,68 +1,70 @@
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const Sidebar = () => {
     const user = useSelector((state) => state.auth.user);
+    const { t, i18n } = useTranslation();
     if (!user) return null;
 
     const menus = [
         {
-            title: "Dashboard",
+            key: "dashboard",
             url: "/dashboard",
             visible_roles: ["admin", "lawyer", "client"],
         },
         {
-            title: "Create Case",
+            key: "createCase",
             url: "/create-case",
             visible_roles: ["client"],
         },
         {
-            title: "Clients",
+            key: "clients",
             url: "/clients",
             visible_roles: ["lawyer"],
         },
         {
-            title: "My Cases",
+            key: "myCases",
             url: "/my-cases",
             visible_roles: ["client", "lawyer"],
         },
         {
-            title: "Manage Lawyers",
+            key: "manageLawyers",
             url: "/manage-lawyers",
             visible_roles: ["admin"],
         },
         {
-            title: "Manage Cases",
+            key: "manageCases",
             url: "/manage-cases",
             visible_roles: ["lawyer"],
         },
         {
-            title: "Upcoming Hearings",
+            key: "upcomingHearings",
             url: "/upcoming-hearings",
             visible_roles: ["lawyer", "client", "admin"],
         },
         {
-            title: "View Cases",
+            key: "viewCases",
             url: "/view-cases",
             visible_roles: ["admin"],
         },
         {
-            title: "Assign Lawyers",
+            key: "assignLawyers",
             url: "/assign-lawyers",
             visible_roles: ["admin"],
         },
         {
-            title: "Document",
+            key: "document",
             url: "/document",
             visible_roles: ["client", "lawyer"],
         },
         {
-            title: "Profile",
+            key: "profile",
             url: "/profile",
             visible_roles: ["client", "lawyer", "admin"],
         },
         {
-            title: "Settings",
+            key: "settings",
             url: "/settings",
             visible_roles: ["admin"],
         },
@@ -75,8 +77,8 @@ const Sidebar = () => {
             </div>
             <nav className="space-y-7">
                 {menus.filter((menu) => menu.visible_roles.includes(user.role)).map((menu) => (
-                    <Link key={menu.title} to={menu.url} className="block hover:text-gray-400">
-                        {menu.title}
+                    <Link key={menu.key} to={menu.url} className="block hover:text-gray-400">
+                        {t(`sidebar.${menu.key}`)}
                     </Link>
                 ))}
             </nav>

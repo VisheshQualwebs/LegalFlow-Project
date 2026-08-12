@@ -1,0 +1,22 @@
+{
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "createCase": "Create Case",
+    "clients": "Clients",
+    "myCases": "My Cases",
+    "manageLawyers": "Manage Lawyers",
+    "manageCases": "Manage Cases",
+    "upcomingHearings": "Upcoming Hearings",
+    "viewCases": "View Cases",
+    "assignLawyers": "Assign Lawyers",
+    "document": "Document",
+    "profile": "Profile",
+    "settings": "Settings"
+  },
+  "navbar": {
+    "welcome": "Welcome",
+    "logout": "Logout",
+    "logoutConfirm": "Are you sure you want to logout?",
+    "logoutFailed": "Failed to logout"
+  }
+}

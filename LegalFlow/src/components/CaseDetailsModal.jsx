@@ -28,13 +28,14 @@ const CaseDetailsModal = ({ caseId, onClose }) => {
                 return;
             }
             console.log("error firebase")
-            await setDoc(doc(db, "calls", newCallId), {
+            const resp = await setDoc(doc(db, "calls", newCallId), {
                 caseId,
                 callerId: user.id,
                 receiverId,
                 status: "ringing",
                 createdAt: Date.now(),
             });
+            console.log("resp", resp);
             console.log("Firestore call created");
             setCallId(newCallId);
             console.log("callId state set:", newCallId);

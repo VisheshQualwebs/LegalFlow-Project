@@ -2,8 +2,11 @@ import { Outlet } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import Footer from "../components/Footer";
+import IncomingCall from "../pages/IncomingCall";
+import useAuth from "../hooks/useAuth";
 
 const DashboardLayout = () => {
+    const { user } = useAuth();
     return (
         <div className="flex min-h-screen bg-gray-100">
             <Sidebar />
@@ -16,6 +19,9 @@ const DashboardLayout = () => {
                 </main>
                 <Footer />
             </div>
+            {user && (user.role === "lawyer" || user.role === "client") && (
+                <IncomingCall user={user} />
+            )}
         </div>
     );
 };

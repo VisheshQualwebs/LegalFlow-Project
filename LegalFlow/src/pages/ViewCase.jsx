@@ -6,6 +6,7 @@ import MessageModal from "../components/MessageModal";
 import useAuth from "../hooks/useAuth";
 import caseService from "../services/caseService";
 import socket from "../utils/socket";
+import CaseDetailsModal from "../components/CaseDetailsModal"
 
 const getBadgeColor = (status) => {
     switch (status) {
@@ -29,6 +30,7 @@ function ViewCase() {
     const [message, setMessage] = useState("");
     const [messageType, setMessageType] = useState("");
     const [deleteCaseId, setDeleteCaseId] = useState(null);
+    const [selectedCaseId, setSelectedCaseId] = useState(null);
     const { user } = useAuth();
     const queryClient = useQueryClient();
     const loadMoreRef = useRef(null);
@@ -177,6 +179,11 @@ function ViewCase() {
         deletMutation.mutate(deleteCaseId);
     }
 
+    const handleClick = (id) => {
+        console.log("clicked", id);
+        setSelectedCaseId(id);
+    }
+
     return (
         <div>
             <div className="flex justify-between items-center mb-8">
@@ -222,7 +229,7 @@ function ViewCase() {
             </div>
             <DataTables name="view-cases-page" loading={loading} columns={columns} isEmpty={cases.length === 0} emptyMessage="No Case Found!!">
                 {sortedCases.map(item => (
-                    <tr key={item.id} className="border-b hover:bg-gray-50 transition">
+                    <tr key={item.id} className="border-b hover:bg-gray-50 transition cursor-pointer" onClick={() => handleClick(item.id)}>
                         <td className="p-4">
                             <div className="font-semibold">
                                 {item.title}
@@ -250,7 +257,7 @@ function ViewCase() {
 
                         {(user?.role === "admin" || user?.role === "client") && (
                             <td className="p-4">
-                                <button onClick={() => handleDelete(item.id)} disabled={deletMutation.isPending}
+                                <button onClick={(e) => { e.stopPropagation(); handleDelete(item.id) }} disabled={deletMutation.isPending}
                                     className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg">
                                     {deletMutation.isPending && deleteCaseId === item.id ? "Deleting..." : "Delete"}
                                 </button>
@@ -275,6 +282,10 @@ function ViewCase() {
             {message && (<MessageModal message={message} type={messageType}
                 onClose={() => { setMessage(""); setDeleteCaseId(null) }}
                 onConfirm={handleConfirmDelete} confirmText="Delete" />)}
+
+            {selectedCaseId && (
+                <CaseDetailsModal caseId={selectedCaseId} onClose={() => setSelectedCaseId(null)} />
+            )}
         </div>
     );
 }

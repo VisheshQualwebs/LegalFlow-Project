@@ -1,16 +1,16 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Skeleton } from "boneyard-js/react";
+import { useEffect } from "react";
 import DashboardCard from "../components/DashboardCard";
 import QuickActions from "../components/QuickActions";
 import RecentCases from "../components/RecentCases";
 import StatusBar from "../components/StatusBar";
 import UpcomingHearings from "../components/UpcomingHearings";
-import useAuth from "../hooks/useAuth";
 import dashboardConfig from "../config/dashboardConfig";
+import quickActions from "../config/quickActions";
+import useAuth from "../hooks/useAuth";
 import dashboardService from "../services/dashboardService";
 import socket from "../utils/socket";
-import { useEffect } from "react";
-import quickActions from "../config/quickActions";
 
 const UserDashboard = () => {
     const { user } = useAuth();
@@ -48,6 +48,7 @@ const UserDashboard = () => {
     const isAdmin = user.role === "admin";
 
     return (
+
         <Skeleton name="user-dashboard" loading={loading} color="#e5e5e5" darkColor="#444444" animate="shimmer" shimmerColor="#eeeeee" darkShimmerColor="#555555">
             <div>
                 <h1 className="text-3xl font-bold mb-2">Dashboard</h1>

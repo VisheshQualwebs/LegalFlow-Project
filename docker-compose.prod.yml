@@ -24,6 +24,8 @@ services:
     #   context: ./LegalFlow
     image: visheshsoni099/legalflow-frontend:latest
     container_name: legalflow-frontend
+    env_file: 
+      - ./LegalFlow/.env
     ports:
       - "80:80"
     depends_on:

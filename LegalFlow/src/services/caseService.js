@@ -16,4 +16,9 @@ const create = async (data) => {
     return resp.data;
 }
 
-export default { list, create, update, remove };
+const getCaseDetails = async (id) => {
+    const resp = await api.get(`/cases/${id}`);
+    return resp.data.data;
+}
+
+export default { list, create, update, remove, getCaseDetails };

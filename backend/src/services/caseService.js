@@ -1,4 +1,4 @@
-const { Case, User } = require("../models");
+const { Case, User, Document } = require("../models");
 
 const create = async (user, body) => {
     if (user.role !== "client") {
@@ -86,6 +86,10 @@ const read = async (currentUser, id) => {
             {
                 model: User,
                 as: "lawyer"
+            },
+            {
+                model: Document,
+                as: "documents"
             }
         ]
     });
@@ -126,7 +130,6 @@ const update = async (id, user, body) => {
             hearingDate: body.hearingDate ?? data.hearingDate,
             hearingTime: body.hearingTime ?? data.hearingTime
         })
-        data.status = body.status;
     }
     await data.save();
     return data;

@@ -49,10 +49,16 @@ const create = async (req, resp) => {
 
 const list = async (req, resp) => {
     const cases = await caseService.list(req.user, req.query);
+    if(cases.pagination) {
+        return resp.send({
+            success: true,
+            data: cases,
+            pagination: cases.pagination,
+        })
+    }
     return resp.send({
         success: true,
         data: cases,
-        pagination: cases.pagination,
     });
 };
 

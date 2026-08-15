@@ -23,6 +23,6 @@ module.exports = {
      * await queryInterface.dropTable('users');
      */
 
-    await queryInterface.removeColumn("Document", "summary");
+    await queryInterface.removeColumn("documents", "summary");
   },
 };

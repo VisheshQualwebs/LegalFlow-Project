@@ -39,6 +39,9 @@ const CaseDetailsModal = ({ caseId, onClose }) => {
             setCallId(newCallId);
             console.log("callId state set:", newCallId);
         } catch (error) {
+            console.error("Firebase error:", error.code);
+            console.error("Firebase message:", error.message);
+            console.error("Full error:", error);
             console.error("Failed to create call:", error);
         }
     }

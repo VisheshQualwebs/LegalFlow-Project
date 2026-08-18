@@ -3,7 +3,7 @@ import useAuth from "../hooks/useAuth";
 
 function ProtectedRoutes({ children }) {
     const { user, isAuthenticated } = useAuth();
-    if (!user && !isAuthenticated) {
+    if (!isAuthenticated || !user) {
         return <Navigate to="/login" replace />;
     }
     return children;

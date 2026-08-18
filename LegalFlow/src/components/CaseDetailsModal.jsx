@@ -69,7 +69,7 @@ const CaseDetailsModal = ({ caseId, onClose }) => {
                                 <h3 className="text-lg font-semibold border-b pb-2 mb-4">Case Info</h3>
                                 <div className="grid grid-cols-2 gap-5">
                                     <div>
-                                        <p className="text-sm text-gray-500">Case Title</p>
+                                        <p className="text-sm text-black-500">Case Title</p>
                                         <p className="font-medium">{caseData.title}</p>
                                     </div>
                                     <div>

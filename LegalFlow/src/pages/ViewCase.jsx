@@ -267,14 +267,12 @@ function ViewCase() {
                 ))}
                 <tr>
                     <td colSpan={columns.length} className="text-center p-6">
-                        <div ref={loadMoreRef}>
-                            {isFetchingNextPage && (
-                                <span className="text-gray-500">Loading more cases...</span>
+                        <div ref={loadMoreRef}> {isFetchingNextPage && (
+                            <span className="text-gray-500">Loading more cases...</span>
+                        )}
+                            {!hasNextPage && cases.length > 0 && (
+                                <span className="text-gray-400">No more cases</span>
                             )}
-                            {!hasNextPage &&
-                                cases.length > 0 && (
-                                    <span className="text-gray-400">No more cases</span>
-                                )}
                         </div>
                     </td>
                 </tr>

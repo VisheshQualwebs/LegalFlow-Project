@@ -1,32 +1,37 @@
-import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { Skeleton } from "boneyard-js/react";
+import { useEffect, useState } from "react";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import googleLogo from "../../assets/images/google.png";
 import leftImage from "../../assets/images/left-side.jpeg";
-import MessageModal from "../../components/MessageModal";
 import { loginSuccess } from "../../redux/authSlice";
 import { login } from "../../services/authService";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import userService from "../../services/userService";
-import { Skeleton } from "boneyard-js/react";
 
 const Login = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [errors, setErrors] = useState({});
-    const [message, setMessage] = useState("");
-    const [messageType, setMessageType] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-    const queryClient = useQueryClient();
+    const [pageLoading, setPageLoading] = useState(true);
     const [formData, setFormData] = useState({
         email: "",
         password: "",
     });
 
+    useEffect(() => {
+        setPageLoading(false);
+    }, []);
+
     const handleChange = (e) => {
         setFormData((prev) => ({
             ...prev,
             [e.target.name]: e.target.value,
+        }));
+        setErrors((prev) => ({
+            ...prev,
+            login: "",
         }));
     };
 
@@ -53,12 +58,12 @@ const Login = () => {
                 email: "",
                 password: "",
             });
-            setMessage("Login Successfull");
-            setMessageType("success");
+            navigate("/dashboard");
         },
         onError: () => {
-            setMessage("Invalid Email and Password");
-            setMessageType("error");
+            setErrors({
+                login: "Invalid Email and password"
+            })
         }
     })
 
@@ -74,7 +79,7 @@ const Login = () => {
     };
 
     return (
-        <Skeleton name="home" loading={loginMutation.isPending} color="#e5e5e5" darkColor="#444444" animate="shimmer" shimmerColor="#eeeeee" darkShimmerColor="#555555">
+        <Skeleton name="home" loading={pageLoading} color="#e5e5e5" darkColor="#444444" animate="shimmer" shimmerColor="#eeeeee" darkShimmerColor="#555555">
             <div className="bg-gray-200 min-h-screen flex items-center justify-center">
                 <div className="w-full max-w-[1200px] min-h-[700px] mx-4 sm:mx-6 lg:mx-8 rounded-[30px] overflow-hidden shadow-2xl border border-gray-400 grid grid-cols-1 lg:grid-cols-2">
                     <div className="bg-white flex flex-col items-center justify-center px-6 sm:px-10 lg:px-16 py-12 lg:py-0">
@@ -123,7 +128,7 @@ const Login = () => {
                                     )}
 
                                     <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2">
-                                        {showPassword ? "🚫" : "👁"}
+                                        {showPassword ? <FaEyeSlash /> : <FaEye />}
                                     </button>
                                 </div>
 
@@ -132,19 +137,15 @@ const Login = () => {
                                         Forgot Password?
                                     </Link>
                                 </div>
+                                {errors.login && (
+                                    <p className="text-red-500 text-sm mb-4">
+                                        {errors.login}
+                                    </p>
+                                )}
 
                                 <button type="submit" disabled={loginMutation.isPending} className="w-full bg-white text-black font-semibold py-4 rounded-lg hover:bg-gray-300">
                                     {loginMutation.isPending ? "Logging in..." : "Login"}
                                 </button>
-                                {message && (
-                                    <MessageModal message={message} type={messageType} confirmText="OK"
-                                        onClose={() => {
-                                            setMessage("")
-                                            if (messageType === "success") {
-                                                navigate("/dashboard");
-                                            }
-                                        }} />
-                                )}
                             </form>
 
                             <button className="w-full border border-gray-500 rounded-lg py-4 mt-6 flex items-center justify-center gap-3 hover:bg-gray-900" onClick={() => alert("Google Login is not enable")} >

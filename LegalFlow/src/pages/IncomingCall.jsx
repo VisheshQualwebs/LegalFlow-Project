@@ -5,7 +5,7 @@ import VideoCall from './VideoCall';
 
 const IncomingCall = ({ user }) => {
     const [incomingCall, setIncomingCall] = useState(null);
-    // const [showVideoCall, setShowVideoCall] = useState(null);
+    const [showVideoCall, setShowVideoCall] = useState(null);
     const [activeCall, setActiveCall] = useState(null);
 
     useEffect(() => {
@@ -19,11 +19,23 @@ const IncomingCall = ({ user }) => {
         const unsubscribe = onSnapshot(callsQuery, (snapshot) => {
             snapshot.docChanges().forEach((change) => {
                 if (change.type === "added") {
-                    const callData = change.doc.data();
-                    setIncomingCall({
+                    const callData = {
                         id: change.doc.id,
-                        ...callData,
-                    });
+                        ...change.doc.data()
+                    };
+                    if (callData.expiresAt && callData.expiresAt <= Date.now()) return;
+                    setIncomingCall(callData);
+                }
+                if (change.type === "modified") {
+                    const callData = {
+                        id: change.doc.id,
+                        ...change.doc.data()
+                    };
+                    if (callData.expiresAt && callData.expiresAt <= Date.now()) {
+                        setIncomingCall(null);
+                        return;
+                    }
+                    setIncomingCall(callData);
                 }
                 if (change.type === "removed") {
                     setIncomingCall(null);
@@ -33,14 +45,40 @@ const IncomingCall = ({ user }) => {
         return () => unsubscribe();
     }, [user?.id]);
 
+    useEffect(() => {
+        if (!incomingCall?.expiresAt) return;
+        const remainingTime = incomingCall.expiresAt - Date.now();
+        if (remainingTime <= 0) {
+            setIncomingCall(null)
+            return;
+        }
+        const timer = setTimeout(async () => {
+            try {
+                await updateDoc(
+                    doc(db, "calls", incomingCall.id),
+                    {
+                        status: "missed"
+                    }
+                )
+            } catch (error) {
+                console.log(error);
+            }
+            setIncomingCall(null);
+        }, remainingTime);
+        return () => clearTimeout(timer);
+    }, [incomingCall])
+
     const handleAccept = async () => {
         if (!incomingCall) return;
+        if (incomingCall.expiresAt && incomingCall.expiresAt <= Date.now()) {
+            setIncomingCall(null);
+            return;
+        }
         try {
-            const call = incomingCall;
-            setActiveCall(call);
             await updateDoc(doc(db, "calls", incomingCall.id), {
                 status: "accepted",
             });
+            setActiveCall(incomingCall);
             // setShowVideoCall(true);
         } catch (error) {
             console.log("failed to Accept a call", error);
@@ -72,12 +110,6 @@ const IncomingCall = ({ user }) => {
     }
 
     if (!incomingCall) return null;
-
-    // if (incomingCall && showVideoCall) {
-    //     return (
-    //         <VideoCall callId={incomingCall.id} isCaller={false} onClose={handleCloseVideoCall} />
-    //     )
-    // }
 
     return (
         <div className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center">

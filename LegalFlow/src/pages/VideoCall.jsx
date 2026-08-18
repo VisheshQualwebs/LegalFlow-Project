@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, onSnapshot, updateDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { useEffect, useRef, useState } from 'react';
 import { AiOutlineAudio, AiOutlineAudioMuted } from "react-icons/ai";
 import { BsCameraVideo, BsCameraVideoOff } from "react-icons/bs";
@@ -17,6 +17,7 @@ const VideoCall = ({ callId, isCaller, onClose }) => {
     useEffect(() => {
         let unsubscribeCall;
         let unsubscribeCandidates;
+        let missedCallTimer;
         let mounted = true;
         const startCall = async () => {
             try {
@@ -94,12 +95,32 @@ const VideoCall = ({ callId, isCaller, onClose }) => {
                             sdp: offer.sdp,
                         },
                         status: "ringing",
+                        createdAt: Date.now(),
+                        expiresAt: Date.now() + 30 * 1000,
                     });
+                    missedCallTimer = setTimeout(async () => {
+                        try {
+                            const snapshot = await getDoc(callRef);
+                            if (snapshot.exists() && snapshot.data().status === "ringing") {
+                                await updateDoc(callRef, {
+                                    status: "missed"
+                                })
+                            }
+                        } catch (error) {
+                            console.log(error);
+                        }
+                    }, 30000);
                     console.log("offer created");
                     unsubscribeCall = onSnapshot(callRef, async (snapshot) => {
                         const data = snapshot.data();
                         if (data?.status === "rejected") {
                             console.log("rejected");
+                            stopMedia();
+                            onClose();
+                            return;
+                        }
+                        if (data?.status === "missed") {
+                            console.log("missed call");
                             stopMedia();
                             onClose();
                             return;
@@ -166,6 +187,9 @@ const VideoCall = ({ callId, isCaller, onClose }) => {
         startCall();
         return () => {
             mounted = false;
+            if (missedCallTimer) {
+                clearTimeout(missedCallTimer);
+            }
             unsubscribeCall?.();
             unsubscribeCandidates?.();
             stopMedia();

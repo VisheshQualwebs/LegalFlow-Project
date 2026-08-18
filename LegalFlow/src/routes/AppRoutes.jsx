@@ -18,13 +18,13 @@ function AppRoutes() {
                 <Route path="/signup" element={<Signup />} />
             </Route>
 
-            <Route path="/"
+            <Route 
                 element={
                     <ProtectedRoutes allowedRole={user?.role}>
                         <DashboardLayout />
                     </ProtectedRoutes>
                 }>
-                {user &&
+                {/* {user &&
                     routeConfig[user?.role].map((route) => (
                         <Route
                             key={route.path}
@@ -32,16 +32,15 @@ function AppRoutes() {
                             element={route.element}
                         />
                     ))
-                }
-
-                {/* {[...routeConfig.admin,
+                } */}
+                {[...routeConfig.admin,
                 ...routeConfig.lawyer,
                 ...routeConfig.client,
                 ].filter((route, index, self) =>
                     self.findIndex((r) => r.path === route.path) === index
                 ).map((route) => (
                     <Route key={route.path} path={route.path} element={route.element} />
-                ))} */}
+                ))}
             </Route>
         </Routes>
     )

@@ -15,9 +15,7 @@ const uploadDocument = async (formData) => {
 }
 
 const downloadDocument = async (id) => {
-    const response = await api.get(`/documents/${id}/download`, {
-        responseType: "blob",
-    });
+    const response = await api.get(`/documents/${id}/download`);
     const url = window.URL.createObjectURL(response.data);
     const a = document.createElement("a");
     a.href = url;
@@ -29,9 +27,7 @@ const downloadDocument = async (id) => {
 }
 
 const viewDocument = async (id) => {
-    const response = await api.get(`/documents/${id}/view`, {
-        responseType: "blob",
-    });
+    const response = await api.get(`/documents/${id}/view`);
     const url = window.URL.createObjectURL(response.data);
     window.open(url, "_blank");
 }

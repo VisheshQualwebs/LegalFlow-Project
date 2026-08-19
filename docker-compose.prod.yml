@@ -1,9 +1,9 @@
 services:
 
   backend:
-    # build: 
-    #   context: ./backend
-    image: visheshsoni099/legalflow-backend:latest
+    build: 
+      context: ./backend
+    # image: visheshsoni099/legalflow-backend:latest
     container_name: legalflow-backend
     env_file:
       - ./backend/.env

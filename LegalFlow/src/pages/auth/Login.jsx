@@ -110,7 +110,7 @@ const Login = () => {
                             </p>
 
                             <form onSubmit={handleSubmit}>
-                                <input name="email" placeholder="Email" required value={formData.email} onChange={handleChange}
+                                <input name="email" placeholder="Email" value={formData.email} onChange={handleChange}
                                     className="w-full bg-transparent border border-gray-500 rounded-lg py-3 px-5 pr-12 text-white placeholder:text-gray-500 focus:outline-none focus:border-white mb-4" />
                                 {errors.email && (
                                     <p className="text-red-500 text-sm mb-4">

@@ -4,37 +4,51 @@ const path = require("path");
 const crypto = require("crypto");
 const Document = require("../models/Document");
 const { getIO } = require("../utils/socket");
+const s3 = require("../config/s3");
+const { PutObjectCommand } = require("@aws-sdk/client-s3");
 
 const create = async (req, resp) => {
     const file = await req.file();
-    const uploadDir = path.join(process.cwd(), "uploads/documents");
-
-    if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir, {
-            recursive: true
-        });
-    }
-
-    const uniqueName = crypto.randomUUID() + "-" + file.filename;
-    const filePath = path.join(uploadDir, uniqueName);
     const buffer = await file.toBuffer();
-
-    fs.writeFileSync(filePath, buffer);
-
     const fields = file.fields;
-
     const data = await caseService.create(req.user, {
         title: fields.title.value,
         description: fields.description.value,
-        caseType: fields.caseType.value
-    });
+        caseType: fields.caseType.value,
+    })
+
+    const uniqueName = crypto.randomUUID() + "-" + file.filename;
+    let filePath;
+
+    if (process.env.NODE_ENV === "production") {
+        const s3Key = `cases/${data.id}/documents/${uniqueName}`;
+        await s3.send(
+            new PutObjectCommand({
+                Bucket: process.env.AWS_S3_BUCKET,
+                Key: s3Key,
+                Body: buffer,
+                ContentType: file.mimetype,
+            })
+        );
+        filePath = s3Key;
+    } else {
+        const uploadDir = path.join(process.cwd(), "uploads/documents");
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, {
+                recursive: true
+            });
+        }
+        const localPath = path.join(uploadDir, uniqueName);
+        fs.writeFileSync(localPath, buffer);
+        filePath = `uploads/documents/${uniqueName}`;
+    }
 
     const document = await Document.create({
         caseId: data.id,
         uploadedBy: req.user.id,
         fileName: uniqueName,
         originalName: file.filename,
-        filePath: `uploads/documents/${uniqueName}`,
+        filePath,
         fileType: file.mimetype,
         fileSize: file.file.bytesRead
     });
@@ -49,7 +63,7 @@ const create = async (req, resp) => {
 
 const list = async (req, resp) => {
     const cases = await caseService.list(req.user, req.query);
-    if(cases.pagination) {
+    if (cases.pagination) {
         return resp.send({
             success: true,
             data: cases,

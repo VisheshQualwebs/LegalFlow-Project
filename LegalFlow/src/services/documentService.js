@@ -16,24 +16,25 @@ const uploadDocument = async (formData) => {
 
 const downloadDocument = async (id) => {
     const response = await api.get(`/documents/${id}/download`, {
-        responseType: "blob",
+        responseType: import.meta.env.PROD ? "json" : "blob"
     });
-    const url = window.URL.createObjectURL(response.data);
+    const url = import.meta.env.PROD ? response.data.url : URL.createObjectURL(response.data);
     const a = document.createElement("a");
     a.href = url;
     a.download = "";
     document.body.appendChild(a);
     a.click();
     a.remove();
-    window.URL.revokeObjectURL(url);
+    if (!import.meta.env.PROD) URL.revokeObjectURL(url);
 }
 
 const viewDocument = async (id) => {
     const response = await api.get(`/documents/${id}/view`, {
-        responseType: "blob",
+        responseType: import.meta.env.PROD ? "json" : "blob"
     });
-    const url = window.URL.createObjectURL(response.data);
+    const url = import.meta.env.PROD ? response.data.url : URL.createObjectURL(response.data);
     window.open(url, "_blank");
+    if (!import.meta.env.PROD) URL.revokeObjectURL(url);
 }
 
 const summarizeDocument = async (id) => {

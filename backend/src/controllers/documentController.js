@@ -26,12 +26,14 @@ const viewDocument = async (req, resp) => {
     if (process.env.NODE_ENV === "production") {
         const command = new GetObjectCommand({
             Bucket: process.env.AWS_S3_BUCKET,
-            Key: document.filePath
+            Key: document.filePath,
+            ResponseContentType: document.fileType,
+            ResponseContentDisposition: "inline"
         });
-        const signedUrl = await getSignedUrl(s3, command, { expiresIn: 300 });
+        const url = await getSignedUrl(s3, command, { expiresIn: 300 });
         return resp.send({
             success: true,
-            url: signedUrl
+            url
         });
     }
 
@@ -44,6 +46,11 @@ const viewDocument = async (req, resp) => {
     }
     resp.type(document.fileType);
     return resp.send(fs.createReadStream(fullPath));
+    // const fileUrl = `/uploads/documents/${document.fileName}`;
+    // return resp.send({
+    //     success: true,
+    //     url: fileUrl
+    // });
 };
 
 const downloadDocument = async (req, resp) => {
@@ -81,6 +88,10 @@ const downloadDocument = async (req, resp) => {
     );
     resp.type(document.fileType);
     return resp.send(fs.createReadStream(fullPath));
+    // return resp.send({
+    //     success: true,
+    //     url: `/uploads/documents/${document.fileName}`
+    // });
 };
 
 module.exports = { list, downloadDocument, viewDocument };

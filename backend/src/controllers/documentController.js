@@ -46,11 +46,6 @@ const viewDocument = async (req, resp) => {
     }
     resp.type(document.fileType);
     return resp.send(fs.createReadStream(fullPath));
-    // const fileUrl = `/uploads/documents/${document.fileName}`;
-    // return resp.send({
-    //     success: true,
-    //     url: fileUrl
-    // });
 };
 
 const downloadDocument = async (req, resp) => {
@@ -88,10 +83,6 @@ const downloadDocument = async (req, resp) => {
     );
     resp.type(document.fileType);
     return resp.send(fs.createReadStream(fullPath));
-    // return resp.send({
-    //     success: true,
-    //     url: `/uploads/documents/${document.fileName}`
-    // });
 };
 
 module.exports = { list, downloadDocument, viewDocument };

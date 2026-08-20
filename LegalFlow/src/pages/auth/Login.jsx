@@ -81,7 +81,7 @@ const Login = () => {
     return (
         <Skeleton name="home" loading={pageLoading} color="#e5e5e5" darkColor="#444444" animate="shimmer" shimmerColor="#eeeeee" darkShimmerColor="#555555">
             <div className="bg-gray-200 min-h-screen flex items-center justify-center">
-                <div className="w-full max-w-[1200px] min-h-[700px] mx-4 sm:mx-6 lg:mx-8 rounded-[30px] overflow-hidden shadow-2xl border border-gray-400 grid grid-cols-1 lg:grid-cols-2">
+                <div className="w-full max-w-[1200px] min-h-[700px] rounded-[30px] overflow-hidden shadow-2xl border border-gray-400 grid grid-cols-2">
                     <div className="bg-white flex flex-col items-center justify-center px-6 sm:px-10 lg:px-16 py-12 lg:py-0">
                         <img src={leftImage} alt="Image" className="w-48 sm:w-64 lg:w-96 mb-8" />
                         <h1 className="text-4xl sm:text-5xl font-bold mb-6">
@@ -96,22 +96,17 @@ const Login = () => {
                         </p>
                     </div>
 
-
                     <div className="bg-black text-white flex items-center justify-center px-6 sm:px-10 py-12 lg:py-0">
                         <div className="w-full max-w-[430px]">
-                            <h2 className="text-4xl sm:text-5xl font-bold text-center mb-8 sm:mb-12">                            LegalFlow
-                            </h2>
-
-                            <h3 className="text-2xl sm:text-3xl font-semibold text-center mb-2">                            Login
-                            </h3>
-
-                            <p className="text-center text-gray-400 mb-10">
+                            <h2 className="text-4xl sm:text-5xl font-bold text-center mb-6">LegalFlow</h2>
+                            <h3 className="text-2xl sm:text-3xl font-semibold text-center mb-3">Login</h3>
+                            <p className="text-center text-gray-400 mb-5">
                                 Welcome back! Please enter your login credentials
                             </p>
 
                             <form onSubmit={handleSubmit}>
                                 <input name="email" placeholder="Email" value={formData.email} onChange={handleChange}
-                                    className="w-full bg-transparent border border-gray-500 rounded-lg py-3 px-5 pr-12 text-white placeholder:text-gray-500 focus:outline-none focus:border-white mb-4" />
+                                    className="w-full bg-transparent border border-gray-500 rounded-[20px] py-3 px-5 pr-12 text-white placeholder:text-gray-500 focus:outline-none focus:border-white mb-4" />
                                 {errors.email && (
                                     <p className="text-red-500 text-sm mb-4">
                                         {errors.email}
@@ -120,7 +115,7 @@ const Login = () => {
 
                                 <div className="relative mb-4">
                                     <input type={showPassword ? "text" : "password"} name="password" placeholder="Password"
-                                        required value={formData.password} onChange={handleChange} className="w-full bg-transparent border border-gray-500 rounded-lg py-3 px-5 pr-14 text-white placeholder:text-gray-500 focus:outline-none focus:border-white" />
+                                        required value={formData.password} onChange={handleChange} className="w-full bg-transparent border border-gray-500 rounded-[20px] py-3 px-5 pr-14 text-white placeholder:text-gray-500 focus:outline-none focus:border-white" />
                                     {errors.password && (
                                         <p className="text-red-500 text-sm mb-4">
                                             {errors.password}
@@ -132,8 +127,8 @@ const Login = () => {
                                     </button>
                                 </div>
 
-                                <div className="flex justify-between items-center mb-8">
-                                    <Link to="/forgot-password" className="text-sm underline">
+                                <div className="flex justify-between items-center mb-6">
+                                    <Link to="/login" className="text-sm underline">
                                         Forgot Password?
                                     </Link>
                                 </div>
@@ -143,12 +138,12 @@ const Login = () => {
                                     </p>
                                 )}
 
-                                <button type="submit" disabled={loginMutation.isPending} className="w-full bg-white text-black font-semibold py-4 rounded-lg hover:bg-gray-300">
+                                <button type="submit" disabled={loginMutation.isPending} className="w-full bg-white text-black font-semibold py-3 rounded-[20px] hover:bg-gray-300">
                                     {loginMutation.isPending ? "Logging in..." : "Login"}
                                 </button>
                             </form>
 
-                            <button className="w-full border border-gray-500 rounded-lg py-4 mt-6 flex items-center justify-center gap-3 hover:bg-gray-900" onClick={() => alert("Google Login is not enable")} >
+                            <button className="w-full border border-gray-500 rounded-[20px] py-3 mt-5 flex items-center justify-center gap-3 hover:bg-gray-900" onClick={() => alert("Google Login is not enable")} >
                                 <img src={googleLogo} alt="Google" className="w-6" />
                                 <span>Sign in with Google</span>
                             </button>

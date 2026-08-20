@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 const Sidebar = () => {
@@ -75,11 +75,12 @@ const Sidebar = () => {
             <div className="mb-10">
                 <Link to="/dashboard" className="text-3xl font-bold">LegalFlow</Link>
             </div>
-            <nav className="space-y-7">
+            <nav className="space-y-3">
                 {menus.filter((menu) => menu.visible_roles.includes(user.role)).map((menu) => (
-                    <Link key={menu.key} to={menu.url} className="block hover:text-gray-400">
+                    <NavLink key={menu.key} to={menu.url} className={({ isActive }) => `block border px-5 py-2 rounded-full transition-all duration-200
+                    ${isActive ? "border-white bg-white text-black" : "border-transparent hover:text-gray-400"}`}>
                         {t(`sidebar.${menu.key}`)}
-                    </Link>
+                    </NavLink>
                 ))}
             </nav>
         </div>

@@ -103,6 +103,9 @@ function ViewCase() {
                     valueB = b.status || "";
                     break;
 
+                case "date":
+                    return sortConfig.dir === "asc" ? new Date(a.createdAt) - new Date(b.createdAt) : new Date(b.createdAt) - new Date(a.createdAt);
+
                 default: return 0;
             }
 
@@ -208,6 +211,7 @@ function ViewCase() {
                         <option value="">Sort By</option>
                         <option value="title">Case</option>
                         <option value="status">Status</option>
+                        <option value="date">Date</option>
                         {user?.role !== "client" &&
                             <option value="client">Client</option>
                         }
@@ -222,8 +226,8 @@ function ViewCase() {
                             dir: e.target.value,
                         }));
                     }} disabled={!sortConfig.key} className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black">
-                        <option value="asc">A-Z</option>
-                        <option value="desc">Z-A</option>
+                        <option value="asc">Ascending</option>
+                        <option value="desc">Descending</option>
                     </select>
                 </div>
             </div>

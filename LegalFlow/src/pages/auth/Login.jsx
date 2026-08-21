@@ -85,7 +85,7 @@ const Login = () => {
                     <div className="bg-white flex flex-col items-center justify-center px-6 sm:px-10 lg:px-16 py-12 lg:py-0">
                         <img src={leftImage} alt="Image" className="w-48 sm:w-64 lg:w-96 mb-8" />
                         <h1 className="text-4xl sm:text-5xl font-bold mb-6">
-                            Welcome!
+                            Welcome kapil sir!
                         </h1>
 
                         <p className="text-center text-gray-600 text-base sm:text-lg leading-7 sm:leading-8 max-w-md">
@@ -101,7 +101,7 @@ const Login = () => {
                             <h2 className="text-4xl sm:text-5xl font-bold text-center mb-6">LegalFlow</h2>
                             <h3 className="text-2xl sm:text-3xl font-semibold text-center mb-3">Login</h3>
                             <p className="text-center text-gray-400 mb-5">
-                                Welcome back! Please enter your login credentials
+                                Welcome back sir! Please enter your login credentials
                             </p>
 
                             <form onSubmit={handleSubmit}>

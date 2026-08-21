@@ -31,10 +31,11 @@ const CaseDetailsModal = ({ caseId, onClose }) => {
             const resp = await setDoc(doc(db, "calls", newCallId), {
                 caseId,
                 callerId: user.id,
+                callerName: user.fullName,
                 receiverId,
-                status: "ringing",
                 createdAt: Date.now(),
             });
+            console.log(user.fullName);
             console.log("resp", resp);
             console.log("Firestore call created");
             setCallId(newCallId);
@@ -98,7 +99,7 @@ const CaseDetailsModal = ({ caseId, onClose }) => {
                                                 {caseData.lawyer?.email}
                                             </p>
                                         </div>
-                                        <button onClick={handleClick} className="border px-5 py-3 bg-red-500 text-black hover:cursor-pointer">Start Video Call</button>
+                                        <button onClick={handleClick} className="border px-5 py-3 bg-red-500 text-black rounded-lg hover:cursor-pointer">Start Video Call</button>
                                     </div>
                                 )}
                                 {user.role === "lawyer" && (
@@ -161,7 +162,7 @@ const CaseDetailsModal = ({ caseId, onClose }) => {
                                 Close
                             </button>
                             {callId && (
-                                <VideoCall callId={callId} isCaller={true} onClose={() => setCallId(null)} />
+                                <VideoCall callId={callId} isCaller={true} onClose={() => setCallId(null)} remoteUserName={user.role === "client" ? caseData.lawyer?.fullName : caseData.client?.fullName} />
                             )}
                         </div>
                     )}

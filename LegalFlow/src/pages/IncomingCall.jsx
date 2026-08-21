@@ -5,7 +5,7 @@ import VideoCall from './VideoCall';
 
 const IncomingCall = ({ user }) => {
     const [incomingCall, setIncomingCall] = useState(null);
-    const [showVideoCall, setShowVideoCall] = useState(null);
+    // const [showVideoCall, setShowVideoCall] = useState(null);
     const [activeCall, setActiveCall] = useState(null);
 
     useEffect(() => {
@@ -18,19 +18,11 @@ const IncomingCall = ({ user }) => {
 
         const unsubscribe = onSnapshot(callsQuery, (snapshot) => {
             snapshot.docChanges().forEach((change) => {
-                if (change.type === "added") {
-                    const callData = {
-                        id: change.doc.id,
-                        ...change.doc.data()
-                    };
-                    if (callData.expiresAt && callData.expiresAt <= Date.now()) return;
-                    setIncomingCall(callData);
-                }
-                if (change.type === "modified") {
-                    const callData = {
-                        id: change.doc.id,
-                        ...change.doc.data()
-                    };
+                const callData = {
+                    id: change.doc.id,
+                    ...change.doc.data()
+                };
+                if (change.type === "modified" || change.type === "added") {
                     if (callData.expiresAt && callData.expiresAt <= Date.now()) {
                         setIncomingCall(null);
                         return;
@@ -53,17 +45,15 @@ const IncomingCall = ({ user }) => {
             return;
         }
         const timer = setTimeout(async () => {
+            setIncomingCall(null);
             try {
-                await updateDoc(
-                    doc(db, "calls", incomingCall.id),
-                    {
-                        status: "missed"
-                    }
-                )
+                const callRef = doc(db, "calls", incomingCall.id);
+                await updateDoc(callRef, {
+                    status: "missed"
+                })
             } catch (error) {
                 console.log(error);
             }
-            setIncomingCall(null);
         }, remainingTime);
         return () => clearTimeout(timer);
     }, [incomingCall])
@@ -105,7 +95,7 @@ const IncomingCall = ({ user }) => {
 
     if (activeCall) {
         return (
-            <VideoCall callId={activeCall.id} isCaller={false} onClose={handleCloseVideoCall} />
+            <VideoCall callId={activeCall.id} isCaller={false} onClose={handleCloseVideoCall} remoteUserName={activeCall.callerName} />
         )
     }
 
@@ -115,7 +105,7 @@ const IncomingCall = ({ user }) => {
         <div className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center">
             <div className="bg-white rounded-xl p-8 text-center">
                 <h2 className="text-2xl font-bold mb-2">Incoming Video Call</h2>
-                <p className="text-gray-500 mb-6">Someone is calling you</p>
+                <p className="text-gray-500 mb-6">{incomingCall.callerName || "someone"} is calling you</p>
                 <div className="flex justify-center gap-4">
                     <button onClick={handleAccept} className="bg-green-500 hover:bg-green-600 border rounded-lg px-6 py-3 text-white">Accept</button>
                     <button onClick={handleReject} className="bg-red-500 hover:bg-red-600 border rounded-lg px-6 py-3 text-white">Reject</button>

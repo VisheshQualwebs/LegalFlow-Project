@@ -1,14 +1,13 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
+import { Skeleton } from "boneyard-js/react";
 import { useState } from "react";
 import MessageModal from "../components/MessageModal";
 import { signup } from "../services/authService";
-import { Skeleton } from "boneyard-js/react";
 
 function Settings() {
     const [message, setMessage] = useState("");
     const [messageType, setMessageType] = useState("");
     const [error, setError] = useState({});
-    const queryClient = useQueryClient();
 
     const [form, setForm] = useState({
         fullName: "",

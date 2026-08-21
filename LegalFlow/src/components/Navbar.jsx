@@ -4,6 +4,7 @@ import MessageModal from "./MessageModal";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../redux/authSlice";
 import { useTranslation } from "react-i18next";
+import Notification from "./Notification";
 
 const Navbar = () => {
     const [message, setMessage] = useState("");
@@ -60,12 +61,13 @@ const Navbar = () => {
                     </div>
 
                     <div className="flex items-center gap-4">
+                        <Notification />
                         <select value={i18n.resolvedLanguage} onChange={(e) => changeLanguage(e.target.value)} className="border rounded px-2 py-1">
                             <option value="en">English</option>
                             <option value="hi">हिंदी</option>
                             <option value="he">Hinglish</option>
                         </select>
-                        <button onClick={handleLogout} className="bg-red-600 text-white px-5 py-2 rounded">
+                        <button onClick={handleLogout} className="bg-red-600 text-white px-5 py-2 rounded hover:cursor-pointer">
                             {t("navbar.logout")}
                         </button>
                     </div>

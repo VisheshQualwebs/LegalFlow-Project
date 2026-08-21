@@ -2,9 +2,12 @@ import { addDoc, collection, doc, getDoc, onSnapshot, updateDoc } from 'firebase
 import { useEffect, useRef, useState } from 'react';
 import { AiOutlineAudio, AiOutlineAudioMuted } from "react-icons/ai";
 import { BsCameraVideo, BsCameraVideoOff } from "react-icons/bs";
+import { IoIosShare } from "react-icons/io";
+import { MdCallEnd } from "react-icons/md";
+import { PiCopySimpleLight } from "react-icons/pi";
 import { db } from "../firebase/firebaseConfig";
 
-const VideoCall = ({ callId, isCaller, onClose }) => {
+const VideoCall = ({ callId, isCaller, onClose, remoteUserName }) => {
     const [isCameraOn, setIsCameraOn] = useState(true)
     const [mic, setMic] = useState(true);
     const localVideoRef = useRef(null);
@@ -13,25 +16,19 @@ const VideoCall = ({ callId, isCaller, onClose }) => {
     const localStreamRef = useRef(null);
     const pendingCandidatesRef = useRef([]);
     const [connected, setConnected] = useState(false);
+    const [minimized, setMinimized] = useState(false);
 
     useEffect(() => {
         let unsubscribeCall;
         let unsubscribeCandidates;
         let missedCallTimer;
-        let mounted = true;
         const startCall = async () => {
             try {
                 console.log("Video call component mounted")
-                // Camera and audio on
                 const stream = await navigator.mediaDevices.getUserMedia({
                     video: true,
                     audio: true,
                 });
-
-                if (!mounted) {
-                    stream.getTracks().forEach((track) => track.stop());
-                    return;
-                }
 
                 localStreamRef.current = stream;
                 if (localVideoRef.current) {
@@ -39,20 +36,17 @@ const VideoCall = ({ callId, isCaller, onClose }) => {
                 }
                 console.log("Camera and audio")
 
-                // Real Time connection using stun server to connect our IP and port to the internet
                 const peerConnection = new RTCPeerConnection({
                     iceServers: [{
                         urls: "stun:stun.l.google.com:19302"
                     }]
                 });
 
-                // adding a audio vide in the stun server
                 peerConnectionRef.current = peerConnection;
                 stream.getTracks().forEach((track) => {
                     peerConnection.addTrack(track, stream);
                 });
 
-                // adding a remote user video and audio to the server
                 peerConnection.ontrack = (event) => {
                     console.log("Remote Stream")
                     if (remoteVideoRef.current) {
@@ -70,21 +64,18 @@ const VideoCall = ({ callId, isCaller, onClose }) => {
                     }
                 };
 
-                // Creating a DB in the firebase with the "calls" name called as Collection with the "callId" document.
                 const callRef = doc(db, "calls", callId);
                 const candidatesCollection = collection(
                     callRef,
                     isCaller ? "callerCandidates" : "calleeCandidates"
                 );
 
-                // adding a remote user data in the db
                 peerConnection.onicecandidate = async (e) => {
                     if (e.candidate) {
                         await addDoc(candidatesCollection, e.candidate.toJSON());
                     }
                 };
 
-                // Creating a call
                 if (isCaller) {
                     console.log("I am a caller")
                     const offer = await peerConnection.createOffer();
@@ -96,7 +87,7 @@ const VideoCall = ({ callId, isCaller, onClose }) => {
                         },
                         status: "ringing",
                         createdAt: Date.now(),
-                        expiresAt: Date.now() + 30 * 1000,
+                        expiresAt: Date.now() + 30000,
                     });
                     missedCallTimer = setTimeout(async () => {
                         try {
@@ -186,7 +177,6 @@ const VideoCall = ({ callId, isCaller, onClose }) => {
         };
         startCall();
         return () => {
-            mounted = false;
             if (missedCallTimer) {
                 clearTimeout(missedCallTimer);
             }
@@ -254,10 +244,36 @@ const VideoCall = ({ callId, isCaller, onClose }) => {
         console.log("Mic off")
     }
 
+    const handleScreenShare = async () => {
+        try {
+            console.log("screen share Clicked")
+            const streamVideo = await navigator.mediaDevices.getDisplayMedia({
+                audio: true,
+                video: true,
+            })
+            const trackScreen = streamVideo.getVideoTracks()[0];
+            const sender = peerConnectionRef.current.getSenders().find((sender) => sender.track?.kind === "video");
+            if (sender) {
+                console.log("screen share on")
+                await sender.replaceTrack(trackScreen);
+                console.log("screen share still on")
+            }
+        } catch (error) {
+            console.log("unable to share screen", error);
+        }
+    }
+
     return (
         // <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/75 p-4">
-        <div className="fixed inset-0 z-[100] bg-black flex flex-col">
-            <span className="text-white text-center">{connected ? "Connected" : "Connecting..."}</span>
+        <div className={`fixed z-[100] bg-black text-white shadow-2xl overflow-hidden transition-all duration-300 ${minimized ? "bottom-5 right-5 w-[400px] h-[280px] rounded-lg" : "inset-0"}`}>
+            <div className="h-12 bg-gray flex items-center justify-between px-4">
+                <span className="text-white font-medium">{connected ? "Connected" : "Connecting..."}</span>
+                <div className="flex items-center gap-2">
+                    <button onClick={() => setMinimized(!minimized)} className="w-8 h-8 hover:bg-gray-700 font-medium text-2xl flex items-center justify-center">
+                        {minimized ? <PiCopySimpleLight /> : "-"}
+                    </button>
+                </div>
+            </div>
             <div className="flex-1 grid grid-cols-2 gap-4 p-6 min-h-0">
                 <div className="relative bg-gray-900 rounded-xl overflow-hidden">
                     <video ref={localVideoRef} autoPlay muted playsInline className="w-full h-full object-cover" />
@@ -265,17 +281,23 @@ const VideoCall = ({ callId, isCaller, onClose }) => {
                 </div>
                 <div className="relative bg-gray-900 rounded-xl overflow-hidden">
                     <video ref={remoteVideoRef} autoPlay playsInline className="w-full h-full object-cover" />
-                    <span className="absolute bottom-3 left-3 bg-black/75 text-white p-3 py-1 rounded">Remote User</span>
+                    <span className="absolute bottom-3 left-3 bg-black/75 text-white p-3 py-1 rounded">{remoteUserName || "Remote User"}</span>
                 </div>
             </div>
-            <div className="h-20 shrink-0 bg-gray-900 flex items-center justify-center gap-6 border-t border-gray-700">
-                <button onClick={handleCamera} className={`px-4 py-2 rounded-full items-center ${isCameraOn ? 'bg-white text-black hover:bg-gray-600' : 'bg-white border-gray-300 text-black hover:bg-gray-100'}`} >
-                    <span>{isCameraOn ? <BsCameraVideoOff /> : <BsCameraVideo />}</span>
+            {/* <div className="h-15 shrink-0 bg-gray-900 flex items-center justify-center gap-6 border-t border-gray-700"> */}
+            <div className={`shrink-0 bg-gray-900 flex items-center justify-center gap-6 border-t border-gray-700 ${minimized ? "h-10" : "h-20"}`}>
+                <button onClick={handleCamera} className={`${minimized ? "px-3 py-1 rounded-full font-medium" : "px-6 py-3 rounded-full font-medium"} items-center ${isCameraOn ? 'bg-white text-black hover:bg-gray-600' : 'bg-white border-gray-300 text-black hover:bg-gray-100'}`} >
+                    <span>{isCameraOn ? <BsCameraVideoOff title='off camera' /> : <BsCameraVideo title='on camera' />}</span>
                 </button>
-                <button onClick={handleAudio} className={`px-4 py-2 rounded-full items-center ${mic ? 'bg-white text-black hover:bg-gray-600' : 'bg-white border-gray-300 text-black hover:bg-gray-100'}`} >
-                    <span>{mic ? <AiOutlineAudioMuted /> : <AiOutlineAudio />}</span>
+                <button onClick={handleAudio} className={`${minimized ? "px-3 py-1 rounded-full font-medium" : "px-6 py-3 rounded-full font-medium"} items-center ${mic ? 'bg-white text-black hover:bg-gray-600' : 'bg-white border-gray-300 text-black hover:bg-gray-100'}`} >
+                    <span>{mic ? <AiOutlineAudioMuted title='mute mic' /> : <AiOutlineAudio title='unmute mic' />}</span>
                 </button>
-                <button onClick={handleEndCall} className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-full font-medium">End Call</button>
+                <button onClick={handleScreenShare} title='share screen' className={`${minimized ? "px-3 py-1 rounded-full font-medium" : "px-6 py-3 rounded-full font-medium"} items-center bg-white text-black hover:bg-gray-600`} >
+                    <IoIosShare />
+                </button>
+                <button onClick={handleEndCall} title='End Call' className={`bg-red-500 hover:bg-red-600 text-white ${minimized ? "px-3 py-1 rounded-full font-medium" : "px-6 py-3 rounded-full font-medium"}`}>
+                    <MdCallEnd />
+                </button>
             </div>
         </div>
     )

@@ -37,9 +37,19 @@ const VideoCall = ({ callId, isCaller, onClose, remoteUserName }) => {
                 console.log("Camera and audio")
 
                 const peerConnection = new RTCPeerConnection({
-                    iceServers: [{
-                        urls: "stun:stun.l.google.com:19302"
-                    }]
+                    iceServers: [
+                        {
+                            urls: [
+                                "stun:stun.l.google.com:19302",
+                                "stun:stun1.l.google.com:19302"
+                            ]
+                        },
+                        {
+                            urls: "turn:YOUR_SERVER_IP:3478",
+                            username: "legalflow",
+                            credential: "YOUR_STRONG_PASSWORD"
+                        }
+                    ]
                 });
 
                 peerConnectionRef.current = peerConnection;

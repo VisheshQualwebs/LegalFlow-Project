@@ -57,7 +57,7 @@ const AssignLawyers = () => {
             <h1 className="text-3xl font-bold mb-6">
                 Assign Lawyers
             </h1>
-            <DataTables name="assign-lawyer" loading={loading} columns={assignedCaseColumns} isEmpty={cases.length === 0} emptyMessage="No Cases Found to Assign to Lawyers">
+            <DataTables name="assign-lawyer" loading={true} columns={assignedCaseColumns} isEmpty={cases.length === 0} emptyMessage="No Cases Found to Assign to Lawyers">
                 {cases.map(item => (
                     <tr key={item.id}>
                         <td className="p-4">{item.title}</td>

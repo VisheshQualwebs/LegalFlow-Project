@@ -22,9 +22,10 @@ services:
     restart: always
 
   frontend:
-    # build: 
-    #   context: ./LegalFlow
-    image: visheshsoni099/legalflow-frontend:latest
+    build: 
+      context: ./LegalFlow
+      dockerfile: DockerFile
+    # image: visheshsoni099/legalflow-frontend:latest
     container_name: legalflow-frontend
     env_file: 
       - ./LegalFlow/.env
